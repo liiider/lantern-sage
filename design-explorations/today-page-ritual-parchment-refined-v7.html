@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lantern Sage - Today - Ritual Parchment Refined v7</title>
+  <style>
+    :root {
+      --bg: #1C0A00;
+      --panel-dark: #361500;
+      --panel-mid: #603601;
+      --accent: #CC9544;
+      --text-strong: rgba(204, 149, 68, 0.96);
+      --text-soft: rgba(204, 149, 68, 0.82);
+      --text-faint: rgba(204, 149, 68, 0.6);
+      --line-soft: rgba(204, 149, 68, 0.14);
+      --line-strong: rgba(204, 149, 68, 0.24);
+      --shade-soft: rgba(54, 21, 0, 0.34);
+      --shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100dvh;
+      padding: 22px 16px 32px;
+      background: var(--bg);
+      color: var(--text-strong);
+      font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    }
+
+    .page {
+      width: min(452px, 100%);
+      margin: 0 auto;
+    }
+
+    .masthead {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 2px 2px 18px;
+    }
+
+    .masthead-mark {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      color: var(--text-soft);
+    }
+
+    .masthead-mark svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.9;
+    }
+
+    .masthead-date {
+      font-size: 16px;
+      line-height: 1.32;
+      letter-spacing: 0.01em;
+      color: var(--text-strong);
+    }
+
+    .opening {
+      display: grid;
+      justify-items: center;
+      gap: 18px;
+      padding: 8px 6px 24px;
+      text-align: center;
+    }
+
+    .opening::after {
+      content: "";
+      width: min(240px, 72%);
+      height: 1px;
+      background: var(--line-soft);
+    }
+
+    .source,
+    .section-kicker,
+    .field-label,
+    .ask-label {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      font-size: 10px;
+      line-height: 1.5;
+      color: var(--text-faint);
+    }
+
+    .source {
+      max-width: 26ch;
+    }
+
+    .seal-stage {
+      width: 128px;
+      height: 128px;
+      display: grid;
+      place-items: center;
+      transform: rotate(-2deg);
+      color: var(--text-strong);
+    }
+
+    .seal-stage svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .seal-body {
+      fill: var(--panel-dark);
+      stroke: rgba(204, 149, 68, 0.24);
+      stroke-width: 1.15;
+    }
+
+    .seal-edge,
+    .seal-glyph,
+    .seal-mark {
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .seal-edge {
+      stroke-width: 1.1;
+      opacity: 0.52;
+    }
+
+    .seal-glyph {
+      stroke-width: 1.65;
+      opacity: 0.96;
+    }
+
+    .seal-mark {
+      stroke-width: 1.05;
+      opacity: 0.54;
+    }
+
+    .hero-title {
+      margin: 0;
+      max-width: 6.2ch;
+      font-size: clamp(56px, 15vw, 78px);
+      line-height: 0.9;
+      letter-spacing: -0.05em;
+      text-wrap: balance;
+      color: var(--text-strong);
+    }
+
+    .hero-copy {
+      margin: 0;
+      max-width: 24ch;
+      font-size: 15px;
+      line-height: 1.76;
+      color: var(--text-soft);
+    }
+
+    .manuscript {
+      position: relative;
+      padding: 24px 20px 22px;
+      background: var(--panel-mid);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .manuscript::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(204, 149, 68, 0.08);
+      pointer-events: none;
+    }
+
+    .folio-entry,
+    .timing-line,
+    .field-row,
+    .margin-note {
+      position: relative;
+      z-index: 1;
+    }
+
+    .folio-entry {
+      display: grid;
+      gap: 10px;
+    }
+
+    .folio-rule {
+      height: 1px;
+      margin: 18px 0;
+      border: 0;
+      background: var(--line-soft);
+    }
+
+    .thesis {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.68;
+      letter-spacing: -0.015em;
+      color: var(--text-strong);
+    }
+
+    .entry-title,
+    .suggestion-title,
+    .fields-title,
+    .ask-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text-strong);
+    }
+
+    .entry-copy,
+    .suggestion-copy,
+    .field-copy,
+    .timing-note,
+    .ask-item {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.72;
+      color: var(--text-soft);
+    }
+
+    .timing-stack,
+    .field-list,
+    .ask-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .timing-line {
+      display: grid;
+      gap: 7px;
+      padding-left: 14px;
+      border-left: 1px solid var(--line-strong);
+    }
+
+    .timing-value {
+      margin: 0;
+      font-size: 29px;
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+      color: var(--text-strong);
+    }
+
+    .suggestion-copy {
+      max-width: 34ch;
+    }
+
+    .field-list {
+      gap: 0;
+    }
+
+    .field-row {
+      display: grid;
+      gap: 5px;
+      padding: 12px 0;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .field-row:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .field-label {
+      color: var(--text-faint);
+    }
+
+    .margin-note {
+      width: min(280px, 100%);
+      margin: 4px 0 0 auto;
+      padding: 14px 0 0 16px;
+      border-top: 1px solid var(--line-soft);
+      border-left: 1px solid rgba(204, 149, 68, 0.18);
+    }
+
+    .ask-title {
+      font-size: 17px;
+      line-height: 1.24;
+    }
+
+    .ask-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      gap: 10px;
+    }
+
+    .ask-item {
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(204, 149, 68, 0.1);
+    }
+
+    .ask-item:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    @media (min-width: 720px) {
+      body {
+        padding-top: 32px;
+      }
+
+      .page {
+        width: min(560px, 100%);
+      }
+
+      .masthead-date {
+        font-size: 17px;
+      }
+
+      .opening {
+        gap: 20px;
+        padding-bottom: 26px;
+      }
+
+      .manuscript {
+        padding: 28px 28px 24px;
+      }
+
+      .margin-note {
+        width: min(300px, 46%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page" aria-label="Lantern Sage Today page ritual parchment refined exploration version 7">
+    <header class="masthead">
+      <div class="masthead-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M11.7 4.1v15.4"></path>
+          <path d="M7.6 8.2c1.2-1.5 2.6-2.3 4.2-2.3 1.5 0 2.9.8 4.3 2.3"></path>
+          <path d="M8.7 12.1h6.6"></path>
+          <path d="M9.5 16.1c.9.6 1.7.9 2.6.9.8 0 1.7-.3 2.5-.9"></path>
+        </svg>
+      </div>
+      <div class="masthead-date" aria-label="Current Gregorian date">April 10, 2026 - Friday</div>
+    </header>
+
+    <section class="opening" aria-label="Daily heading">
+      <p class="source">Lunar March 3 · Clear and Bright · Jia-Wu day</p>
+
+      <div class="seal-stage" aria-hidden="true">
+        <svg viewBox="0 0 128 128" aria-label="Day seal">
+          <path class="seal-body" d="M31 13C45 9 78 10 95 18C108 24 114 37 112 53C118 68 116 89 104 101C91 114 70 117 53 114C39 118 24 110 18 95C11 83 11 65 16 50C15 35 19 21 31 13Z"></path>
+          <path class="seal-edge" d="M35 21C48 17 75 17 90 24C100 29 105 40 103 52C108 64 106 82 97 92C87 102 70 105 57 103C45 106 31 100 25 89C20 79 20 65 24 53C24 41 26 28 35 21Z"></path>
+          <path class="seal-mark" d="M27 27l8-4"></path>
+          <path class="seal-mark" d="M96 26l7 5"></path>
+          <path class="seal-mark" d="M24 86l7 6"></path>
+          <path class="seal-mark" d="M94 101l8-4"></path>
+          <path class="seal-glyph" d="M62 33v44"></path>
+          <path class="seal-glyph" d="M46 48c4-8 10-12 18-12 6 0 12 3 18 10"></path>
+          <path class="seal-glyph" d="M45 63c7-1 14-1 22-1 5 0 10 0 16 1"></path>
+          <path class="seal-glyph" d="M50 79c4 5 9 8 15 8 7 0 13-3 18-9"></path>
+          <path class="seal-glyph" d="M55 94h22"></path>
+        </svg>
+      </div>
+
+      <h1 class="hero-title">Move where the day opens.</h1>
+      <p class="hero-copy">Keep the pace lighter than instinct. Let order arrive before effort.</p>
+    </section>
+
+    <article class="manuscript" aria-label="Today folio">
+      <section class="folio-entry">
+        <p class="section-kicker">Today message</p>
+        <p class="thesis">Settle what already wants closure. Favor brief travel, simple repairs, clear talk, and work that restores shape before it asks for ambition.</p>
+      </section>
+
+      <hr class="folio-rule">
+
+      <section class="folio-entry">
+        <p class="section-kicker">Good for</p>
+        <h2 class="entry-title">Where the day agrees</h2>
+        <p class="entry-copy">Prayer. Travel. Small repairs. Study. Meeting. Quiet settling.</p>
+      </section>
+
+      <hr class="folio-rule">
+
+      <section class="folio-entry">
+        <p class="section-kicker">Avoid</p>
+        <h2 class="entry-title">Where the day tightens</h2>
+        <p class="entry-copy">Opening trade. Breaking ground. Moving house. Burial matters. Late disputes.</p>
+      </section>
+
+      <hr class="folio-rule">
+
+      <section class="folio-entry" aria-label="Timing guidance">
+        <p class="section-kicker">Timing guidance</p>
+        <div class="timing-stack">
+          <div class="timing-line">
+            <p class="section-kicker">Best time to go out</p>
+            <p class="timing-value">8:30 AM - 10:30 AM</p>
+            <p class="timing-note">Go in the morning while the day is still open and easy to steer.</p>
+          </div>
+
+          <div class="timing-line">
+            <p class="section-kicker">Time to avoid</p>
+            <p class="timing-value">6:30 PM - 8:30 PM</p>
+            <p class="timing-note">By evening the current thickens, and simple errands ask for more patience.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="folio-rule">
+
+      <section class="folio-entry">
+        <p class="section-kicker">One practical suggestion</p>
+        <h2 class="suggestion-title">Reset the threshold first</h2>
+        <p class="suggestion-copy">Clear one visible surface near the entrance before noon. A calmer threshold gives the rest of the day less to resist.</p>
+      </section>
+
+      <hr class="folio-rule">
+
+      <section class="folio-entry" aria-label="Selected almanac base fields">
+        <p class="section-kicker">Selected almanac base fields</p>
+        <h2 class="fields-title">What the day is written with</h2>
+        <div class="field-list">
+          <div class="field-row">
+            <p class="field-label">Stem and branch</p>
+            <p class="field-copy">Jia-Wu day</p>
+          </div>
+
+          <div class="field-row">
+            <p class="field-label">Solar term</p>
+            <p class="field-copy">Clear and Bright</p>
+          </div>
+
+          <div class="field-row">
+            <p class="field-label">Fortune directions</p>
+            <p class="field-copy">Wealth: North. Joy: Northeast. Blessing: South.</p>
+          </div>
+
+          <div class="field-row">
+            <p class="field-label">Conflict and lodge</p>
+            <p class="field-copy">Clash: Rat. Sha: North. Lodge: Room. Avoid haste in vows.</p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="margin-note" aria-label="Ask invitation">
+        <p class="ask-label">Ask invitation</p>
+        <h2 class="ask-title">At the margin, ask plainly</h2>
+        <ul class="ask-list">
+          <li class="ask-item">Is this a good time to go out?</li>
+          <li class="ask-item">Is this a good time to meet someone?</li>
+          <li class="ask-item">Is this a good time to discuss important matters?</li>
+          <li class="ask-item">What should I adjust first at home today?</li>
+        </ul>
+      </aside>
+    </article>
+  </main>
+</body>
+</html>

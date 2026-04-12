@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lantern Sage - Today - Ritual Parchment Refined v6</title>
+  <style>
+    :root {
+      --bg: #1C0A00;
+      --panel-dark: #361500;
+      --panel-mid: #603601;
+      --accent: #CC9544;
+      --text-strong: rgba(204, 149, 68, 0.96);
+      --text-soft: rgba(204, 149, 68, 0.82);
+      --text-faint: rgba(204, 149, 68, 0.62);
+      --line-soft: rgba(204, 149, 68, 0.14);
+      --line-strong: rgba(204, 149, 68, 0.26);
+      --inset: rgba(28, 10, 0, 0.22);
+      --shadow: 0 26px 72px rgba(0, 0, 0, 0.34);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100dvh;
+      padding: 18px;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      color: var(--text-strong);
+      font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      overflow-x: hidden;
+    }
+
+    .frame {
+      width: min(430px, 100%);
+      padding: 18px 16px 22px;
+      border-radius: 34px;
+      background: var(--bg);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .frame::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 26px;
+      border: 1px solid var(--line-soft);
+      pointer-events: none;
+    }
+
+    .topbar,
+    .hero-panel,
+    .folio-sheet {
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 2px 2px 0;
+    }
+
+    .topbar-mark {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      color: var(--text-strong);
+      flex: 0 0 auto;
+    }
+
+    .topbar-mark svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.55;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.92;
+    }
+
+    .topbar-date {
+      min-width: 0;
+      font-size: 16px;
+      line-height: 1.3;
+      letter-spacing: 0.01em;
+      color: var(--text-strong);
+    }
+
+    .hero-panel {
+      display: grid;
+      justify-items: center;
+      gap: 18px;
+      padding: 24px 20px 26px;
+      margin-bottom: 14px;
+      border-radius: 28px;
+      background: var(--panel-dark);
+      box-shadow: inset 0 0 0 1px rgba(204, 149, 68, 0.06);
+      text-align: center;
+    }
+
+    .hero-panel::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(204, 149, 68, 0.08);
+      pointer-events: none;
+    }
+
+    .hero-source,
+    .section-kicker,
+    .field-label,
+    .ask-label {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      font-size: 10px;
+      line-height: 1.5;
+      color: var(--text-faint);
+    }
+
+    .hero-source {
+      max-width: 25ch;
+    }
+
+    .seal-stage {
+      width: 116px;
+      height: 116px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      color: var(--text-strong);
+    }
+
+    .seal-ring,
+    .seal-ring::before,
+    .seal-ring::after,
+    .seal-axis-h,
+    .seal-axis-v {
+      position: absolute;
+      content: "";
+    }
+
+    .seal-ring {
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid var(--line-strong);
+    }
+
+    .seal-ring::before {
+      inset: 12px;
+      border-radius: 50%;
+      border: 1px solid var(--line-soft);
+    }
+
+    .seal-ring::after {
+      inset: 30px;
+      border-radius: 50%;
+      border: 1px solid rgba(204, 149, 68, 0.1);
+    }
+
+    .seal-axis-h {
+      top: 50%;
+      left: 9%;
+      width: 82%;
+      height: 1px;
+      background: var(--line-soft);
+      transform: translateY(-50%);
+    }
+
+    .seal-axis-v {
+      left: 50%;
+      top: 9%;
+      width: 1px;
+      height: 82%;
+      background: var(--line-soft);
+      transform: translateX(-50%);
+    }
+
+    .seal-core {
+      width: 60px;
+      height: 60px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(28, 10, 0, 0.16);
+      box-shadow: inset 0 0 0 1px rgba(204, 149, 68, 0.08);
+    }
+
+    .seal-core svg {
+      width: 34px;
+      height: 34px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.35;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .hero-title {
+      margin: 0;
+      max-width: 6.2ch;
+      font-size: clamp(56px, 15vw, 78px);
+      line-height: 0.9;
+      letter-spacing: -0.05em;
+      text-wrap: balance;
+      color: var(--text-strong);
+    }
+
+    .hero-copy {
+      margin: 0;
+      max-width: 22ch;
+      font-size: 15px;
+      line-height: 1.78;
+      color: var(--text-soft);
+    }
+
+    .folio-sheet {
+      padding: 22px 18px 18px;
+      border-radius: 30px;
+      background: var(--panel-mid);
+      box-shadow: inset 0 0 0 1px rgba(204, 149, 68, 0.06);
+    }
+
+    .folio-sheet::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 22px;
+      border: 1px solid rgba(204, 149, 68, 0.08);
+      pointer-events: none;
+    }
+
+    .folio-section {
+      display: grid;
+      gap: 12px;
+    }
+
+    .folio-rule {
+      height: 1px;
+      margin: 18px 0;
+      background: var(--line-soft);
+      border: 0;
+    }
+
+    .thesis {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.68;
+      letter-spacing: -0.015em;
+      color: var(--text-strong);
+    }
+
+    .paired-reading {
+      display: grid;
+      gap: 16px;
+    }
+
+    .reading-block,
+    .timing-block,
+    .suggestion-block,
+    .ask-block,
+    .field-item {
+      display: grid;
+      gap: 8px;
+    }
+
+    .reading-block,
+    .timing-block,
+    .suggestion-block,
+    .ask-block {
+      padding: 12px 0 0;
+    }
+
+    .reading-title,
+    .timing-title,
+    .suggestion-title,
+    .ask-title,
+    .fields-title {
+      margin: 0;
+      font-size: 23px;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--text-strong);
+    }
+
+    .reading-copy,
+    .timing-note,
+    .suggestion-copy,
+    .field-copy,
+    .ask-item {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.74;
+      color: var(--text-soft);
+    }
+
+    .timing-grid,
+    .practical-grid,
+    .fields-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .timing-block,
+    .suggestion-block,
+    .ask-block,
+    .field-item {
+      background: none;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .timing-block,
+    .suggestion-block,
+    .ask-block {
+      padding-left: 14px;
+      border-left: 1px solid var(--line-strong);
+    }
+
+    .field-item {
+      padding-top: 10px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .timing-value {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.03;
+      letter-spacing: -0.03em;
+      color: var(--text-strong);
+    }
+
+    .ask-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+
+    .ask-item {
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .ask-item:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .fields-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .practical-grid .ask-block {
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+      border-left: 0;
+      padding-left: 0;
+    }
+
+    .field-label {
+      color: var(--text-faint);
+    }
+
+    @media (min-width: 390px) {
+      .paired-reading,
+      .timing-grid,
+      .fields-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .paired-reading {
+        column-gap: 22px;
+      }
+    }
+
+    @media (min-width: 720px) {
+      .frame {
+        width: min(980px, 100%);
+        padding: 22px 22px 26px;
+      }
+
+      .hero-panel {
+        padding: 32px 34px 34px;
+      }
+
+      .hero-title {
+        max-width: none;
+      }
+
+      .folio-sheet {
+        padding: 28px 26px 24px;
+      }
+
+      .practical-grid {
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        align-items: start;
+      }
+
+      .practical-grid .ask-block {
+        padding-top: 12px;
+        border-top: 0;
+        border-left: 1px solid var(--line-soft);
+        padding-left: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="frame" aria-label="Lantern Sage Today page ritual parchment refined exploration version 6">
+    <header class="topbar">
+      <div class="topbar-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3.5v16.8"></path>
+          <path d="M7.2 8.1c1.4-1.8 2.9-2.7 4.8-2.7 1.9 0 3.4.9 4.8 2.7"></path>
+          <path d="M8.2 12h7.6"></path>
+          <path d="M9.1 15.6c.8.7 1.8 1 2.9 1 .9 0 1.9-.3 2.8-1"></path>
+          <path d="M10.1 19.1h3.8"></path>
+        </svg>
+      </div>
+      <div class="topbar-date" aria-label="Current Gregorian date">April 10, 2026 - Friday</div>
+    </header>
+
+    <section class="hero-panel">
+      <p class="hero-source">Lunar March 3 · Clear and Bright · Jia-Wu day</p>
+
+      <div class="seal-stage" aria-hidden="true">
+        <div class="seal-ring"></div>
+        <div class="seal-axis-h"></div>
+        <div class="seal-axis-v"></div>
+        <div class="seal-core">
+          <svg viewBox="0 0 24 24" aria-label="Day seal">
+            <path d="M12 3.1v17.8"></path>
+            <path d="M6.6 8.3c1.4-2 3.2-3 5.4-3 2.2 0 4 1 5.4 3"></path>
+            <path d="M8 12.2h8"></path>
+            <path d="M8.9 15.4c.9.8 1.9 1.2 3.1 1.2 1.2 0 2.2-.4 3.1-1.2"></path>
+            <path d="M9.9 18.8h4.2"></path>
+          </svg>
+        </div>
+      </div>
+
+      <h1 class="hero-title">Move where the day opens.</h1>
+      <p class="hero-copy">Keep the pace lighter than instinct. Let order arrive before effort.</p>
+    </section>
+
+    <article class="folio-sheet" aria-label="Today folio">
+      <section class="folio-section">
+        <p class="section-kicker">Today message</p>
+        <p class="thesis">Attend first to what can be settled without force. The day favors movement that is already half-ready: brief travel, modest repairs, clear conversation, and tasks that restore shape rather than expand it.</p>
+      </section>
+
+      <hr class="folio-rule">
+
+      <section class="folio-section paired-reading" aria-label="Core reading">
+        <div class="reading-block">
+          <p class="section-kicker">Good for</p>
+          <h2 class="reading-title">Where the current agrees</h2>
+          <p class="reading-copy">Prayer. Travel. Small repairs. Study. Meeting. Quiet settling.</p>
+        </div>
+
+        <div class="reading-block">
+          <p class="section-kicker">Avoid</p>
+          <h2 class="reading-title">Where the day resists</h2>
+          <p class="reading-copy">Opening trade. Breaking ground. Moving house. Burial matters. Late disputes.</p>
+        </div>
+      </section>
+
+      <hr class="folio-rule">
+
+      <section class="folio-section timing-grid" aria-label="Timing guidance">
+        <div class="timing-block">
+          <p class="section-kicker">Best time to go out</p>
+          <p class="timing-value">8:30 AM - 10:30 AM</p>
+          <p class="timing-note">Earlier movement carries a cleaner current and asks less resistance from the day.</p>
+        </div>
+
+        <div class="timing-block">
+          <p class="section-kicker">Time to avoid</p>
+          <p class="timing-value">6:30 PM - 8:30 PM</p>
+          <p class="timing-note">The late hours feel crowded and reactive, making ordinary matters harder than they need to be.</p>
+        </div>
+      </section>
+
+      <hr class="folio-rule">
+
+      <section class="folio-section practical-grid">
+        <div class="suggestion-block">
+          <p class="section-kicker">One practical suggestion</p>
+          <h2 class="suggestion-title">Reset the threshold first</h2>
+          <p class="suggestion-copy">Reset one visible surface near your entrance before noon, even if it is only a shelf, a chair, or one small table. A cleaner threshold gives the rest of the day less to push against.</p>
+        </div>
+
+        <aside class="ask-block" aria-label="Ask invitation">
+          <p class="ask-label">Ask invitation</p>
+          <h2 class="ask-title">At the margin, ask plainly</h2>
+          <ul class="ask-list">
+            <li class="ask-item">Is this a good time to go out?</li>
+            <li class="ask-item">Is this a good time to meet someone?</li>
+            <li class="ask-item">Is this a good time to discuss important matters?</li>
+            <li class="ask-item">What should I adjust first at home today?</li>
+          </ul>
+        </aside>
+      </section>
+
+      <hr class="folio-rule">
+
+      <section class="folio-section" aria-label="Selected almanac base fields">
+        <p class="section-kicker">Selected almanac base fields</p>
+        <div class="fields-grid">
+          <div class="field-item">
+            <p class="field-label">Stem and branch</p>
+            <p class="field-copy">Jia-Wu day</p>
+          </div>
+
+          <div class="field-item">
+            <p class="field-label">Solar term</p>
+            <p class="field-copy">Clear and Bright</p>
+          </div>
+
+          <div class="field-item">
+            <p class="field-label">Fortune directions</p>
+            <p class="field-copy">Wealth: North. Joy: Northeast. Blessing: South.</p>
+          </div>
+
+          <div class="field-item">
+            <p class="field-label">Conflict and lodge</p>
+            <p class="field-copy">Clash: Rat. Sha: North. Lodge: Room. Avoid haste in vows.</p>
+          </div>
+        </div>
+      </section>
+    </article>
+  </main>
+</body>
+</html>
