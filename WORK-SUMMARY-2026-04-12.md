@@ -292,3 +292,11 @@ At the time of writing this summary:
 - no remote was available to push to
 
 If versioning is needed immediately, initialize a local git repo in `D:\Lantern Sage`, commit the current files, and later add a remote when available.
+
+## Encoding clarification
+
+If this document or the HTML file shows a garbled separator in the hero note, the intended text is:
+
+- `Clear and Bright [centered dot] Jia-Wu day`
+
+The separator should be a centered dot between `Bright` and `Jia-Wu`, not a Chinese character and not a broken symbol.
