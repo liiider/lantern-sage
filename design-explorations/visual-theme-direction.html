@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lantern Sage ¡¤ Visual Theme Study</title>
+  <style>
+    :root {
+      --bg: #120d0b;
+      --panel: #19110e;
+      --text: #efe0c7;
+      --muted: #cdb590;
+      --soft: rgba(239, 224, 199, 0.72);
+      --line: rgba(239, 224, 199, 0.14);
+      --line-strong: rgba(239, 224, 199, 0.26);
+      --seal: #a33b2e;
+      --seal-dark: #75231a;
+      --glow: rgba(191, 144, 79, 0.16);
+      --shadow: 0 34px 90px rgba(0,0,0,0.44);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(163,59,46,0.12), transparent 18%),
+        radial-gradient(circle at bottom right, rgba(191,144,79,0.08), transparent 22%),
+        linear-gradient(180deg, #17100d 0%, #100b08 100%);
+      color: var(--text);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      padding: 28px;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 30px 30px;
+      mask-image: radial-gradient(circle at center, black 48%, transparent 90%);
+      opacity: 0.28;
+    }
+
+    .board {
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      border-radius: 40px;
+      background: linear-gradient(180deg, rgba(28,19,15,0.94), rgba(18,12,9,0.98));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 30px 30px 36px;
+      overflow: hidden;
+    }
+
+    .board::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 28px;
+      border: 1px solid rgba(239, 224, 199, 0.05);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .heading {
+      margin: 24px 0 10px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.28em;
+      color: var(--muted);
+    }
+
+    .theme-name {
+      margin: 0 0 14px;
+      font-family: "Palatino Linotype", Georgia, serif;
+      font-size: 66px;
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: #f1dec0;
+      text-shadow: 0 10px 28px rgba(0,0,0,0.24);
+    }
+
+    .intro {
+      max-width: 760px;
+      margin: 0 0 34px;
+      color: var(--soft);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .main-surface,
+    .side-surface {
+      border-radius: 28px;
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.005));
+    }
+
+    .main-surface {
+      min-height: 640px;
+      padding: 34px 32px;
+    }
+
+    .side-surface {
+      min-height: 640px;
+      padding: 24px 22px;
+    }
+
+    .main-surface::before,
+    .side-surface::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(239, 224, 199, 0.05);
+      pointer-events: none;
+    }
+
+    .main-surface::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 18%, var(--glow), transparent 18%),
+        linear-gradient(transparent 0%, rgba(255,255,255,0.02) 46%, transparent 100%);
+    }
+
+    .line-demo {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    .line-block {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .line-label {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+    }
+
+    .hairline {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(239,224,199,0.32) 14%, rgba(239,224,199,0.16) 86%, transparent);
+    }
+
+    .broken-line {
+      height: 18px;
+      position: relative;
+    }
+
+    .broken-line::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 8px;
+      height: 1px;
+      background: repeating-linear-gradient(90deg, rgba(239,224,199,0.22) 0 16px, transparent 16px 28px, rgba(239,224,199,0.14) 28px 42px, transparent 42px 58px);
+    }
+
+    .wave-line {
+      height: 20px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='20' viewBox='0 0 240 20'%3E%3Cpath d='M0 10 C10 2 20 2 30 10 C40 18 50 18 60 10 C70 2 80 2 90 10 C100 18 110 18 120 10 C130 2 140 2 150 10 C160 18 170 18 180 10 C190 2 200 2 210 10 C220 18 230 18 240 10' fill='none' stroke='%23e7d0af' stroke-opacity='0.65' stroke-width='1.5'/%3E%3C/svg%3E") repeat-x left center;
+      opacity: 0.9;
+    }
+
+    .chiselled-frame {
+      min-height: 180px;
+      position: relative;
+      border-radius: 20px;
+      border: 1px solid rgba(239,224,199,0.1);
+      background: linear-gradient(145deg, #2c1e18 0%, #1b120e 100%);
+      box-shadow: inset 0 0 38px rgba(255,255,255,0.015);
+    }
+
+    .chiselled-frame::before,
+    .chiselled-frame::after {
+      content: "";
+      position: absolute;
+      background: rgba(239,224,199,0.12);
+    }
+
+    .chiselled-frame::before {
+      width: 1px;
+      height: 74%;
+      left: 50%;
+      top: 13%;
+      transform: translateX(-50%);
+    }
+
+    .chiselled-frame::after {
+      height: 1px;
+      width: 74%;
+      left: 13%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .headline-system {
+      position: relative;
+      z-index: 1;
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .headline-note {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.24em;
+    }
+
+    .headline-a {
+      margin: 0;
+      max-width: 7.5ch;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 82px;
+      line-height: 0.88;
+      letter-spacing: -0.045em;
+      color: #f2dfc1;
+    }
+
+    .headline-b {
+      margin: 0;
+      max-width: 7.2ch;
+      font-family: "Palatino Linotype", Georgia, serif;
+      font-size: 76px;
+      line-height: 0.96;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+      color: #f1dfc2;
+    }
+
+    .headline-c {
+      width: min(100%, 520px);
+      height: auto;
+      overflow: visible;
+      filter: drop-shadow(0 10px 24px rgba(0,0,0,0.24));
+    }
+
+    .swatch-grid {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .swatch-label {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 8px;
+    }
+
+    .glyph-box {
+      min-height: 170px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, #2a1c16 0%, #18100d 100%);
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+
+    .glyph-box::before {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border: 1px dashed rgba(239,224,199,0.12);
+      border-radius: 14px;
+    }
+
+    .glyph-char {
+      position: relative;
+      z-index: 1;
+      font-size: 72px;
+      line-height: 1;
+      color: #f0ddc0;
+      letter-spacing: 0.14em;
+    }
+
+    .sigil-box {
+      min-height: 230px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      position: relative;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #281a15 0%, #17100d 100%);
+    }
+
+    .sigil-circle {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      border: 1px solid rgba(239,224,199,0.16);
+      position: relative;
+    }
+
+    .sigil-circle::before,
+    .sigil-circle::after {
+      content: "";
+      position: absolute;
+      background: rgba(239,224,199,0.12);
+    }
+
+    .sigil-circle::before {
+      width: 1px;
+      height: 72%;
+      left: 50%;
+      top: 14%;
+      transform: translateX(-50%);
+    }
+
+    .sigil-circle::after {
+      height: 1px;
+      width: 72%;
+      left: 14%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .sigil-circle .inner {
+      position: absolute;
+      inset: 18px;
+      border-radius: 50%;
+      border: 1px dashed rgba(239,224,199,0.12);
+    }
+
+    .sigil-circle .core {
+      position: absolute;
+      inset: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 10px;
+      color: #f0ddc0;
+      font-size: 24px;
+    }
+
+    .note {
+      margin-top: 16px;
+      color: var(--soft);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 980px) {
+      .stage { grid-template-columns: 1fr; }
+      .theme-name { font-size: 52px; }
+      .headline-a { font-size: 66px; }
+      .headline-b { font-size: 60px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="board">
+    <div class="eyebrow">Visual Theme Direction</div>
+    <div class="heading">Lantern Sage</div>
+    <h1 class="theme-name">Manuscript ritual with carved accents.</h1>
+    <p class="intro">This direction is not about layout. It is only about how the product should look at the level of letterform and line treatment. The title should feel copied by hand, half-preserved, slightly ceremonial. The lines should feel scored, broken, and symbolic rather than neat and digital.</p>
+
+    <section class="stage">
+      <article class="main-surface">
+        <div class="line-demo">
+          <div class="line-block">
+            <div class="line-label">Primary line</div>
+            <div class="hairline"></div>
+          </div>
+          <div class="line-block">
+            <div class="line-label">Broken inscription line</div>
+            <div class="broken-line"></div>
+          </div>
+          <div class="line-block">
+            <div class="line-label">Mystic wave line</div>
+            <div class="wave-line"></div>
+          </div>
+          <div class="line-block">
+            <div class="line-label">Chiselled frame language</div>
+            <div class="chiselled-frame"></div>
+          </div>
+        </div>
+
+        <div class="headline-system">
+          <div class="headline-note">Handwritten manuscript lead</div>
+          <h2 class="headline-a">Move only where the day opens.</h2>
+
+          <div class="headline-note">Carved accent version</div>
+          <h2 class="headline-b">Move only where the day opens.</h2>
+
+          <div class="headline-note">Symbolic graphic title</div>
+          <svg class="headline-c" viewBox="0 0 700 240" aria-label="Move only where the day opens graphic lettering">
+            <defs>
+              <filter id="roughen2" x="-10%" y="-10%" width="120%" height="120%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="7" result="n"/>
+                <feDisplacementMap in="SourceGraphic" in2="n" scale="1.4"/>
+              </filter>
+            </defs>
+            <g fill="none" stroke="#f1dfc2" stroke-width="2.4" filter="url(#roughen2)">
+              <path d="M28 74 L28 192 L54 192 L54 116 L94 164 L134 116 L134 192 L160 192 L160 74 L134 74 L94 124 L54 74 Z"/>
+              <path d="M186 74 L186 192 L256 192 L256 168 L212 168 L212 144 L248 144 L248 122 L212 122 L212 98 L254 98 L254 74 Z"/>
+              <path d="M284 74 L284 192 L354 192 L354 168 L310 168 L310 144 L346 144 L346 122 L310 122 L310 98 L352 98 L352 74 Z"/>
+              <path d="M398 74 L398 192 L424 192 L424 136 L474 136 L474 112 L424 112 L424 98 L480 98 L480 74 Z"/>
+              <path d="M528 74 L528 192 L596 192 L596 168 L554 168 L554 144 L590 144 L590 122 L554 122 L554 98 L594 98 L594 74 Z"/>
+              <path d="M76 222 C102 198 128 198 154 222 C180 246 206 246 232 222 C258 198 284 198 310 222 C336 246 362 246 388 222 C414 198 440 198 466 222 C492 246 518 246 544 222"/>
+            </g>
+          </svg>
+        </div>
+      </article>
+
+      <aside class="side-surface">
+        <div class="swatch-grid">
+          <div>
+            <div class="swatch-label">Glyph Accent</div>
+            <div class="glyph-box">
+              <div class="glyph-char">¼ª</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="swatch-label">Sigil Accent</div>
+            <div class="sigil-box">
+              <div class="sigil-circle">
+                <div class="inner"></div>
+                <div class="core"><span>?</span><span>?</span></div>
+              </div>
+            </div>
+          </div>
+
+          <p class="note">This theme should feel like a private manuscript touched by ritual marks and carved frames, not a clean software interface. If this direction is right, the next step is to build one full hero screen using only this typography and line language.</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

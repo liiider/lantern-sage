@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lantern Sage ¡¤ Title System Board</title>
+  <style>
+    :root {
+      --bg: #110c09;
+      --panel: #1b130f;
+      --line: rgba(234, 215, 186, 0.12);
+      --line-strong: rgba(234, 215, 186, 0.22);
+      --text: #ecdcc4;
+      --muted: #ccb28d;
+      --soft: rgba(236, 220, 196, 0.72);
+      --seal: #a43d30;
+      --seal-dark: #78271d;
+      --gold: #b78a54;
+      --shadow: 0 34px 90px rgba(0,0,0,0.42);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 26px;
+      background:
+        radial-gradient(circle at top left, rgba(164,61,48,0.14), transparent 18%),
+        radial-gradient(circle at bottom right, rgba(183,138,84,0.08), transparent 22%),
+        linear-gradient(180deg, #17100d 0%, #100b08 100%);
+      color: var(--text);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(circle at center, black 46%, transparent 90%);
+      opacity: 0.28;
+    }
+
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .intro {
+      max-width: 900px;
+      margin-bottom: 26px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: rgba(255,255,255,0.02);
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    h1 {
+      margin: 18px 0 10px;
+      font-family: "Iowan Old Style", Georgia, serif;
+      font-size: 48px;
+      line-height: 0.94;
+      letter-spacing: -0.04em;
+    }
+
+    .intro p {
+      margin: 0;
+      color: var(--soft);
+      line-height: 1.72;
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      position: relative;
+      border-radius: 34px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(30,20,15,0.94), rgba(18,12,9,0.98));
+      box-shadow: var(--shadow);
+      padding: 22px;
+      overflow: hidden;
+      min-height: 820px;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 24px;
+      border: 1px solid rgba(234, 215, 186, 0.05);
+      pointer-events: none;
+    }
+
+    .card-head {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .head-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .seal {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, var(--seal), var(--seal-dark));
+      color: #fff4eb;
+      font-weight: 700;
+      box-shadow: 0 10px 22px rgba(164,61,48,0.2);
+    }
+
+    .brand {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      line-height: 1.3;
+    }
+
+    .system {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      text-align: right;
+    }
+
+    .surface {
+      position: relative;
+      z-index: 1;
+      border-radius: 28px;
+      min-height: 500px;
+      padding: 24px 18px 20px;
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+
+    .surface .label {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      margin-bottom: 18px;
+    }
+
+    .surface .subline {
+      margin: 18px 0 0;
+      max-width: 20ch;
+      color: var(--soft);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .caption {
+      position: relative;
+      z-index: 1;
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .caption h2 {
+      margin: 0 0 8px;
+      font-family: "Iowan Old Style", Georgia, serif;
+      font-size: 26px;
+      line-height: 1.02;
+      font-weight: 500;
+    }
+
+    .caption p {
+      margin: 0;
+      color: var(--soft);
+      font-size: 14px;
+      line-height: 1.68;
+    }
+
+    .manuscript .surface {
+      background:
+        radial-gradient(circle at top center, rgba(183,138,84,0.08), transparent 18%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
+    }
+
+    .manuscript-sheet {
+      width: 100%;
+      height: 340px;
+      border-radius: 22px;
+      border: 1px dashed rgba(234,215,186,0.16);
+      background: rgba(255,255,255,0.02);
+      position: relative;
+      padding: 22px 16px;
+      overflow: hidden;
+    }
+
+    .manuscript-sheet::before,
+    .manuscript-sheet::after {
+      content: "";
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      height: 1px;
+      background: rgba(234,215,186,0.08);
+    }
+
+    .manuscript-sheet::before { top: 84px; }
+    .manuscript-sheet::after { bottom: 84px; }
+
+    .script-mark {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: rgba(236,220,196,0.12);
+      font-size: 220px;
+      line-height: 1;
+      font-family: "Times New Roman", serif;
+      font-style: italic;
+      pointer-events: none;
+    }
+
+    .script-title {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      max-width: 7.6ch;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 62px;
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      color: #f3e0c3;
+      text-shadow: 0 8px 28px rgba(0,0,0,0.24);
+    }
+
+    .side-note {
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      color: rgba(236,220,196,0.5);
+      font-size: 12px;
+      writing-mode: vertical-rl;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+    }
+
+    .inscription .surface {
+      background:
+        radial-gradient(circle at top center, rgba(183,138,84,0.08), transparent 18%),
+        linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+    }
+
+    .slab {
+      width: 100%;
+      height: 340px;
+      border-radius: 26px;
+      border: 1px solid rgba(234,215,186,0.1);
+      background: linear-gradient(145deg, #30221b 0%, #1d1410 44%, #140e0b 100%);
+      position: relative;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      box-shadow: inset 0 0 44px rgba(255,255,255,0.015);
+    }
+
+    .slab::before,
+    .slab::after {
+      content: "";
+      position: absolute;
+      background: rgba(234,215,186,0.1);
+    }
+
+    .slab::before {
+      width: 1px;
+      height: 72%;
+      left: 50%;
+      top: 14%;
+      transform: translateX(-50%);
+    }
+
+    .slab::after {
+      height: 1px;
+      width: 72%;
+      top: 50%;
+      left: 14%;
+      transform: translateY(-50%);
+    }
+
+    .slab-title {
+      margin: 0;
+      max-width: 8.3ch;
+      font-family: "Palatino Linotype", Georgia, serif;
+      text-transform: uppercase;
+      font-size: 50px;
+      line-height: 0.98;
+      letter-spacing: 0.02em;
+      color: #f1dfc2;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 12px 24px rgba(0,0,0,0.26);
+    }
+
+    .corner-runic {
+      position: absolute;
+      color: rgba(236,220,196,0.52);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.26em;
+    }
+
+    .corner-runic.top { top: 18px; left: 50%; transform: translateX(-50%); }
+    .corner-runic.bottom { bottom: 18px; left: 50%; transform: translateX(-50%); }
+    .corner-runic.left { left: 12px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+    .corner-runic.right { right: 12px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+    .sigil .surface {
+      background:
+        radial-gradient(circle at top center, rgba(183,138,84,0.1), transparent 16%),
+        linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+    }
+
+    .sigil-board {
+      width: 100%;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+    }
+
+    .sigil-board svg {
+      width: min(280px, 100%);
+      height: auto;
+      overflow: visible;
+      filter: drop-shadow(0 12px 28px rgba(0,0,0,0.28));
+    }
+
+    .sigil-circle {
+      width: 196px;
+      height: 196px;
+      border-radius: 50%;
+      border: 1px solid rgba(234,215,186,0.16);
+      position: relative;
+    }
+
+    .sigil-circle::before,
+    .sigil-circle::after {
+      content: "";
+      position: absolute;
+      background: rgba(234,215,186,0.12);
+    }
+
+    .sigil-circle::before {
+      width: 1px;
+      height: 74%;
+      left: 50%;
+      top: 13%;
+      transform: translateX(-50%);
+    }
+
+    .sigil-circle::after {
+      height: 1px;
+      width: 74%;
+      top: 50%;
+      left: 13%;
+      transform: translateY(-50%);
+    }
+
+    .sigil-circle .inner {
+      position: absolute;
+      inset: 22px;
+      border-radius: 50%;
+      border: 1px dashed rgba(234,215,186,0.14);
+    }
+
+    .sigil-circle .core {
+      position: absolute;
+      inset: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 10px;
+      color: #f2e0c4;
+      font-size: 26px;
+    }
+
+    .sigil-title {
+      margin: 0;
+      opacity: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    @media (max-width: 1180px) {
+      .grid { grid-template-columns: 1fr; }
+      .card { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="intro">
+      <div class="eyebrow">Title System Board</div>
+      <h1>Three genuinely different title directions for Lantern Sage.</h1>
+      <p>This pass removes the old page-first thinking. The question here is not which screen looks nicer. The question is what kind of textual magic Lantern Sage should be built on: private manuscript, carved inscription, or symbolic mark system.</p>
+    </section>
+
+    <section class="grid">
+      <article class="card manuscript">
+        <header class="card-head">
+          <div class="head-left">
+            <div class="seal">¾í</div>
+            <div class="brand">Lantern<br>Sage</div>
+          </div>
+          <div class="system">A<br>Manuscript</div>
+        </header>
+
+        <section class="surface">
+          <div class="label">today's almanac</div>
+          <div class="manuscript-sheet">
+            <div class="script-mark">¡Ò</div>
+            <div class="side-note">copied by hand</div>
+            <h2 class="script-title">Move only where the day opens.</h2>
+          </div>
+          <p class="subline">Looks like a private text, a found page, or a ritual note passed forward rather than a product headline.</p>
+        </section>
+
+        <section class="caption">
+          <h2>Manuscript hand</h2>
+          <p>Best if Lantern Sage should feel intimate, secretive, literary, and inherited. The title behaves like a discovered line from an older source.</p>
+        </section>
+      </article>
+
+      <article class="card inscription">
+        <header class="card-head">
+          <div class="head-left">
+            <div class="seal">±®</div>
+            <div class="brand">Lantern<br>Sage</div>
+          </div>
+          <div class="system">B<br>Inscription</div>
+        </header>
+
+        <section class="surface">
+          <div class="label">today's almanac</div>
+          <div class="slab">
+            <div class="corner-runic top">Lantern</div>
+            <div class="corner-runic bottom">Sage</div>
+            <div class="corner-runic left">Read</div>
+            <div class="corner-runic right">Today</div>
+            <h2 class="slab-title">Move only where the day opens.</h2>
+          </div>
+          <p class="subline">Looks carved, declarative, severe, and ceremonial. More monument than page.</p>
+        </section>
+
+        <section class="caption">
+          <h2>Carved inscription</h2>
+          <p>Best if Lantern Sage should feel ancient, unsoftened, and formal. This direction is less poetic and more absolute.</p>
+        </section>
+      </article>
+
+      <article class="card sigil">
+        <header class="card-head">
+          <div class="head-left">
+            <div class="seal">Ó¡</div>
+            <div class="brand">Lantern<br>Sage</div>
+          </div>
+          <div class="system">C<br>Sigil Hybrid</div>
+        </header>
+
+        <section class="surface">
+          <div class="label">today's almanac</div>
+          <div class="sigil-board">
+            <svg viewBox="0 0 560 320" aria-label="Graphic title system">
+              <defs>
+                <filter id="rough" x="-10%" y="-10%" width="120%" height="120%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="1" seed="6" result="n"/>
+                  <feDisplacementMap in="SourceGraphic" in2="n" scale="1.5"/>
+                </filter>
+              </defs>
+              <g fill="none" stroke="#f0dec1" stroke-width="2.2" filter="url(#rough)">
+                <path d="M42 84 L42 246 L72 246 L72 150 L122 206 L172 150 L172 246 L202 246 L202 84 L170 84 L122 140 L74 84 Z"/>
+                <path d="M236 84 L236 246 L332 246 L332 218 L266 218 L266 180 L322 180 L322 152 L266 152 L266 112 L330 112 L330 84 Z"/>
+                <path d="M364 84 L364 246 L460 246 L460 218 L394 218 L394 180 L450 180 L450 152 L394 152 L394 112 L458 112 L458 84 Z"/>
+                <path d="M94 286 C122 260 148 260 176 286 C204 312 230 312 258 286 C286 260 312 260 340 286 C368 312 394 312 422 286"/>
+              </g>
+            </svg>
+            <div class="sigil-circle">
+              <div class="inner"></div>
+              <div class="core"><span>?</span><span>?</span></div>
+            </div>
+          </div>
+          <p class="subline">Not a font choice. The title becomes a mark system. It feels least like a website and most like a branded divination object.</p>
+          <h2 class="sigil-title">Move only where the day opens.</h2>
+        </section>
+
+        <section class="caption">
+          <h2>Graphic title system</h2>
+          <p>Best if Lantern Sage should become memorable and non-generic. This is the strongest route if normal typography keeps feeling too safe.</p>
+        </section>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

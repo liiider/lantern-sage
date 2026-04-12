@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lantern Sage ¡¤ History ¡¤ Ritual Parchment</title>
+  <style>
+    :root {
+      --bg-top: #1e1612;
+      --bg-bottom: #140f0d;
+      --paper: #f0dfc6;
+      --paper-soft: rgba(240, 223, 198, 0.76);
+      --paper-faint: rgba(240, 223, 198, 0.42);
+      --line: rgba(240, 223, 198, 0.14);
+      --line-soft: rgba(240, 223, 198, 0.08);
+      --line-strong: rgba(240, 223, 198, 0.26);
+      --seal: #9f3b2f;
+      --seal-dark: #6f241a;
+      --seal-text: #fff2e6;
+      --gold: #b58d57;
+      --shadow: 0 36px 120px rgba(0, 0, 0, 0.5);
+      --positive: #c9a26c;
+      --neutral: #8f7a62;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background:
+        radial-gradient(circle at top left, rgba(159,59,47,0.14), transparent 18%),
+        radial-gradient(circle at 82% 20%, rgba(181,141,87,0.10), transparent 20%),
+        linear-gradient(180deg, #17100d 0%, #0f0b09 100%);
+      color: var(--paper);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: radial-gradient(circle at center, black 46%, transparent 90%);
+      opacity: 0.22;
+    }
+
+    .phone {
+      width: min(430px, 100%);
+      min-height: 900px;
+      border-radius: 46px;
+      padding: 18px;
+      background:
+        linear-gradient(180deg, rgba(30,22,18,0.94), rgba(20,15,13,0.98)),
+        radial-gradient(circle at top center, rgba(181,141,87,0.08), transparent 22%);
+      border: 1px solid rgba(240,223,198,0.08);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 128px;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.42);
+      border: 1px solid rgba(255,255,255,0.04);
+      z-index: 5;
+    }
+
+    .screen {
+      position: relative;
+      min-height: 864px;
+      border-radius: 34px;
+      overflow: hidden;
+      padding: 28px 18px 22px;
+      background:
+        radial-gradient(circle at top center, rgba(181,141,87,0.08), transparent 18%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+    }
+
+    .screen::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 26px;
+      border: 1px solid var(--line-soft);
+      pointer-events: none;
+    }
+
+    .screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 22%, rgba(181,141,87,0.09), transparent 18%),
+        radial-gradient(circle at 50% 82%, rgba(159,59,47,0.08), transparent 16%);
+      opacity: 0.88;
+    }
+
+    .topbar,
+    .footer {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .topbar { margin-bottom: 24px; }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .seal {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, var(--seal), var(--seal-dark));
+      color: var(--seal-text);
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 12px 24px rgba(159,59,47,0.22);
+    }
+
+    .brand-name,
+    .meta-label,
+    .section-label,
+    .small-note,
+    .entry-meta,
+    .status-pill {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--paper-soft);
+    }
+
+    .menu {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(240,223,198,0.1);
+      color: var(--paper);
+      font-size: 18px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .hero {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .meta-line {
+      color: var(--paper-faint);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .hero-sigil {
+      width: 116px;
+      height: 116px;
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+
+    .hero-sigil::before,
+    .hero-sigil::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+    }
+
+    .hero-sigil::after {
+      inset: 14px;
+      border-style: dashed;
+      opacity: 0.7;
+    }
+
+    .hero-sigil .h,
+    .hero-sigil .v {
+      position: absolute;
+      background: var(--line);
+    }
+
+    .hero-sigil .h {
+      width: 82%;
+      height: 1px;
+      left: 9%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .hero-sigil .v {
+      width: 1px;
+      height: 82%;
+      left: 50%;
+      top: 9%;
+      transform: translateX(-50%);
+    }
+
+    .hero-sigil .core {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--paper);
+      font-size: 24px;
+      border: 1px solid rgba(240,223,198,0.08);
+      background: radial-gradient(circle at center, rgba(181,141,87,0.10), transparent 72%);
+      z-index: 1;
+    }
+
+    .hero-title {
+      width: min(332px, 100%);
+      height: auto;
+      overflow: visible;
+      filter: drop-shadow(0 10px 26px rgba(0,0,0,0.24));
+    }
+
+    .hero-copy {
+      max-width: 24ch;
+      color: var(--paper-soft);
+      font-size: 16px;
+      line-height: 1.72;
+      margin: 0;
+    }
+
+    .timeline {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .history-entry {
+      position: relative;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.014));
+      padding: 16px 16px 18px;
+      overflow: hidden;
+    }
+
+    .history-entry::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 3px;
+      background: linear-gradient(180deg, rgba(181,141,87,0.95), rgba(159,59,47,0.65));
+      opacity: 0.85;
+    }
+
+    .history-entry.active {
+      border-color: rgba(181,141,87,0.28);
+      box-shadow: inset 0 0 0 1px rgba(181,141,87,0.08), 0 14px 34px rgba(0,0,0,0.18);
+    }
+
+    .entry-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .entry-date {
+      font-family: "Palatino Linotype", Georgia, serif;
+      font-size: 28px;
+      line-height: 0.96;
+      color: var(--paper);
+      letter-spacing: -0.03em;
+    }
+
+    .entry-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      text-align: right;
+    }
+
+    .status-pill {
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.025);
+    }
+
+    .status-pill.accurate { color: var(--positive); border-color: rgba(201,162,108,0.24); }
+    .status-pill.neutral { color: var(--paper-faint); }
+
+    .entry-message {
+      color: var(--paper);
+      font-size: 16px;
+      line-height: 1.68;
+      margin: 0 0 12px;
+    }
+
+    .entry-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .entry-block {
+      padding-top: 12px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .entry-copy {
+      margin: 6px 0 0;
+      color: var(--paper-soft);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .divider-set {
+      position: relative;
+      z-index: 2;
+      margin: 14px 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .rule {
+      width: 100%;
+      max-width: 330px;
+    }
+
+    .rule.thin {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--line-strong) 12%, var(--line) 88%, transparent);
+    }
+
+    .rule.broken {
+      height: 1px;
+      background: repeating-linear-gradient(90deg, var(--line-strong) 0 18px, transparent 18px 32px, var(--line) 32px 50px, transparent 50px 64px);
+    }
+
+    .lock-panel {
+      position: relative;
+      z-index: 2;
+      margin-top: 18px;
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.026), rgba(255,255,255,0.012));
+      padding: 18px 18px 20px;
+      overflow: hidden;
+    }
+
+    .lock-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: linear-gradient(180deg, var(--seal), var(--gold));
+    }
+
+    .lock-copy {
+      margin: 8px 0 14px;
+      color: var(--paper-soft);
+      font-size: 15px;
+      line-height: 1.72;
+      max-width: 25ch;
+    }
+
+    .cta {
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--seal-text);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      background: linear-gradient(180deg, var(--seal), var(--seal-dark));
+      box-shadow: 0 14px 28px rgba(159,59,47,0.22);
+      white-space: nowrap;
+    }
+
+    .footer {
+      position: relative;
+      z-index: 2;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .footer-note {
+      color: var(--paper-faint);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 520px) {
+      .phone { min-height: 900px; }
+      .hero-title { width: min(296px, 100%); }
+      .entry-grid { grid-template-columns: 1fr; }
+      .entry-head { flex-direction: column; }
+      .entry-meta { justify-content: flex-start; text-align: left; }
+      .cta { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" aria-label="Lantern Sage History page">
+    <section class="screen">
+      <header class="topbar">
+        <div class="brand">
+          <div class="seal">ä›</div>
+          <div class="brand-name">Lantern<br>Sage</div>
+        </div>
+        <div class="menu">?</div>
+      </header>
+
+      <section class="hero">
+        <div class="meta-line">History ¡¤ last seven days</div>
+        <div class="hero-sigil">
+          <div class="h"></div>
+          <div class="v"></div>
+          <div class="core">ä›</div>
+        </div>
+        <div class="meta-label">recent rhythm</div>
+        <svg class="hero-title" viewBox="0 0 620 290" aria-label="History title">
+          <defs>
+            <filter id="rough-edge-history" x="-10%" y="-10%" width="120%" height="120%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="1" seed="15" result="noise"/>
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.15"/>
+            </filter>
+          </defs>
+          <g fill="none" stroke="#f1dfc2" stroke-width="2.7" stroke-linecap="square" stroke-linejoin="miter" filter="url(#rough-edge-history)">
+            <path d="M50 56 L50 234 L90 234 L90 152 L162 152 L162 234 L202 234 L202 56 L162 56 L162 116 L90 116 L90 56 Z"/>
+            <path d="M248 56 L248 234 L358 234 L358 196 L290 196 L290 162 L346 162 L346 128 L290 128 L290 94 L356 94 L356 56 Z"/>
+            <path d="M404 56 L404 234 L514 234 L514 196 L446 196 L446 162 L502 162 L502 128 L446 128 L446 94 L512 94 L512 56 Z"/>
+            <path d="M94 268 C122 244 150 244 178 268 C206 292 234 292 262 268 C290 244 318 244 346 268 C374 292 402 292 430 268 C458 244 486 244 514 268"/>
+          </g>
+        </svg>
+        <p class="hero-copy">This page should read like a quiet record of recent days. It is a rhythm ledger, not a dashboard archive.</p>
+      </section>
+
+      <section class="timeline">
+        <article class="history-entry active">
+          <div class="entry-head">
+            <div>
+              <div class="entry-date">Apr 10</div>
+              <div class="small-note">Friday ¡¤ Shanghai</div>
+            </div>
+            <div class="entry-meta">
+              <div class="status-pill accurate">Accurate</div>
+              <div class="status-pill">2 asks</div>
+            </div>
+          </div>
+          <p class="entry-message">A steadier day for simple decisions and practical progress.</p>
+          <div class="entry-grid">
+            <div class="entry-block">
+              <div class="section-label">Good for</div>
+              <p class="entry-copy">Short errands. Casual meetings. Clearing loose tasks.</p>
+            </div>
+            <div class="entry-block">
+              <div class="section-label">Avoid</div>
+              <p class="entry-copy">Forced discussions. Rushed commitments. Late changes.</p>
+            </div>
+          </div>
+          <div class="entry-block">
+            <div class="section-label">Saved note</div>
+            <p class="entry-copy">Best approached slowly, with less noise and one visible reset before noon.</p>
+          </div>
+        </article>
+
+        <article class="history-entry">
+          <div class="entry-head">
+            <div>
+              <div class="entry-date">Apr 9</div>
+              <div class="small-note">Thursday ¡¤ Shanghai</div>
+            </div>
+            <div class="entry-meta">
+              <div class="status-pill neutral">Neutral</div>
+              <div class="status-pill">1 ask</div>
+            </div>
+          </div>
+          <p class="entry-message">Better for routine tasks and lighter conversations than anything emotionally dense.</p>
+          <div class="entry-grid">
+            <div class="entry-block">
+              <div class="section-label">Good for</div>
+              <p class="entry-copy">Admin work. Errands. Quiet follow-through.</p>
+            </div>
+            <div class="entry-block">
+              <div class="section-label">Avoid</div>
+              <p class="entry-copy">Pushing tense timing. Adding another social layer late.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="history-entry">
+          <div class="entry-head">
+            <div>
+              <div class="entry-date">Apr 8</div>
+              <div class="small-note">Wednesday ¡¤ Shanghai</div>
+            </div>
+            <div class="entry-meta">
+              <div class="status-pill">No feedback</div>
+              <div class="status-pill">0 asks</div>
+            </div>
+          </div>
+          <p class="entry-message">A cleaner day for movement, but less useful for conversations that need softness.</p>
+          <div class="entry-grid">
+            <div class="entry-block">
+              <div class="section-label">Best window</div>
+              <p class="entry-copy">8:00 AM - 10:00 AM</p>
+            </div>
+            <div class="entry-block">
+              <div class="section-label">Avoid window</div>
+              <p class="entry-copy">7:00 PM - 9:00 PM</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="divider-set">
+        <div class="rule thin"></div>
+        <div class="rule broken"></div>
+      </section>
+
+      <section class="lock-panel">
+        <div class="section-label">Lantern Sage Plus</div>
+        <p class="lock-copy">Unlock your full 30-day rhythm, repeated patterns, and deeper weekly summaries after the free seven-day record.</p>
+        <div class="cta">See plus</div>
+      </section>
+
+      <footer class="footer">
+        <div class="footer-note">History page static draft ¡¤ ritual parchment system ¡¤ rhythm record not data archive</div>
+      </footer>
+    </section>
+  </main>
+</body>
+</html>

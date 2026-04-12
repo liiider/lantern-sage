@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lantern Sage - Today - Ritual Parchment Refined v5</title>
+  <style>
+    :root {
+      --bg-top: #1c0a00;
+      --bg-bottom: #1c0a00;
+      --folio-outer: rgba(31, 22, 17, 0.94);
+      --folio-inner: rgba(245, 228, 198, 0.08);
+      --screen-bg-top: #1c0a00;
+      --screen-bg-bottom: #1c0a00;
+      --card-bg-top: #603601;
+      --card-bg-bottom: #603601;
+      --card-hero-top: #361500;
+      --card-hero-bottom: #361500;
+      --card-footer: #361500;
+      --button-bg: #cc9544;
+      --button-text: #1c0a00;
+      --button-border: #cc9544;
+      --paper: #ead6b8;
+      --paper-soft: rgba(234, 214, 184, 0.8);
+      --paper-faint: rgba(234, 214, 184, 0.56);
+      --ink: #241711;
+      --seal: #8f3427;
+      --seal-dark: #662017;
+      --gold: #cc9544;
+      --line: rgba(234, 214, 184, 0.08);
+      --line-soft: rgba(234, 214, 184, 0.04);
+      --line-strong: rgba(234, 214, 184, 0.14);
+      --glow: rgba(204, 149, 68, 0.14);
+      --shadow: 0 38px 120px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      color: var(--paper);
+      background: var(--bg-top);
+      font-family: "Georgia", "Times New Roman", serif;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    body::before {
+      background: none;
+    }
+
+    body::after {
+      background: none;
+    }
+
+    .phone {
+      width: min(430px, 100%);
+      min-height: 1020px;
+      padding: 10px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 46px;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 128px;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.42);
+      border: 1px solid rgba(255,255,255,0.04);
+      z-index: 5;
+    }
+
+    .screen {
+      position: relative;
+      min-height: 982px;
+      padding: 28px 18px 24px;
+      border-radius: 34px;
+      overflow: hidden;
+      background: var(--screen-bg-top);
+    }
+
+    .screen::before {
+      content: none;
+    }
+
+    .screen::after {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border-radius: 24px;
+      pointer-events: none;
+      background: none;
+    }
+
+    .topbar,
+    .footer-line {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .topbar {
+      margin-bottom: 18px;
+      padding-bottom: 6px;
+      align-items: center;
+    }
+
+    .topbar-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .seal {
+      width: 28px;
+      height: 28px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      color: var(--paper);
+      background: none;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .seal svg,
+    .fact-icon,
+    .tiny-icon {
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.55;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .seal svg {
+      width: 24px;
+      height: 24px;
+      opacity: 0.92;
+    }
+
+    .meta-label,
+    .section-label,
+    .micro-label,
+    .ask-kicker,
+    .footer-note {
+      text-transform: uppercase;
+      letter-spacing: 0.24em;
+      font-size: 10px;
+      color: rgba(234, 214, 184, 0.72);
+    }
+
+    .topbar-date {
+      font-family: "Palatino Linotype", Georgia, serif;
+      font-size: 18px;
+      line-height: 1.22;
+      letter-spacing: -0.005em;
+      color: var(--paper);
+      white-space: nowrap;
+      padding-top: 0;
+    }
+
+    .tiny-icon { width: 13px; height: 13px; opacity: 0.64; }
+    .fact-icon { width: 16px; height: 16px; opacity: 0.78; }
+
+    .hero {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .hero-panel {
+      position: relative;
+      display: grid;
+      gap: 16px;
+      padding: 24px 22px 22px;
+      margin: 0 2px;
+      border-radius: 28px;
+      background: var(--card-hero-top);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.01),
+        0 18px 36px rgba(12, 4, 0, 0.3);
+    }
+
+    .hero-inscription {
+      display: block;
+      padding-bottom: 4px;
+      border-bottom: none;
+    }
+
+    .inscription-kicker { display: none; }
+
+    .inscription-source {
+      display: block;
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(234, 214, 184, 0.62);
+    }
+
+    .sigil-wrap {
+      width: 100%;
+      display: grid;
+      justify-items: center;
+      gap: 16px;
+      margin: 0 auto;
+    }
+
+    .sigil-stage {
+      width: auto;
+      min-height: 0;
+      padding: 0;
+      border-radius: 0;
+      border: none;
+      background: none;
+      box-shadow: none;
+      position: relative;
+      display: grid;
+      justify-items: center;
+      align-content: start;
+      gap: 0;
+    }
+
+    .orbital,
+    .orbital::before,
+    .orbital::after {
+      position: absolute;
+      border-radius: 50%;
+      content: "";
+    }
+
+    .orbital {
+      width: 94px;
+      height: 94px;
+      position: relative;
+      inset: auto;
+      border: 1px solid rgba(234,214,184,0.07);
+      background: none;
+      animation: none;
+    }
+
+    .orbital::before {
+      inset: 10px;
+      border: 1px solid rgba(234,214,184,0.05);
+    }
+
+    .orbital::after {
+      inset: 26px;
+      border: 1px solid rgba(234,214,184,0.04);
+    }
+
+    .sigil-rays,
+    .sigil-rays::before,
+    .sigil-rays::after {
+      position: absolute;
+      content: "";
+      background: rgba(234, 214, 184, 0.1);
+      width: 46px;
+      height: 1px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .sigil-rays::before { transform: translate(-50%, -50%) rotate(90deg); }
+    .sigil-rays::after { display: none; }
+
+    .sigil-core {
+      width: 94px;
+      height: 94px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: none;
+      border: none;
+      box-shadow: none;
+      animation: none;
+    }
+
+    .sigil-core svg {
+      width: 50px;
+      height: 50px;
+      stroke: var(--paper);
+      fill: none;
+      stroke-width: 1.3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.94;
+    }
+
+    .meta-stack {
+      display: grid;
+      gap: 12px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .hero-title {
+      margin: 0;
+      max-width: 6.5ch;
+      font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-size: clamp(58px, 15vw, 78px);
+      line-height: 0.9;
+      letter-spacing: -0.05em;
+      text-wrap: balance;
+    }
+
+    .carved-line {
+      width: 148px;
+      height: auto;
+      opacity: 0.68;
+    }
+
+    .lead {
+      margin: 0 auto;
+      max-width: 276px;
+      color: rgba(234, 214, 184, 0.74);
+      font-size: 14px;
+      line-height: 1.78;
+    }
+
+    .folio {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      gap: 18px;
+    }
+
+    .folio-section {
+      position: relative;
+      padding: 20px 18px 18px;
+      border-radius: 24px;
+      background: var(--card-bg-bottom);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.01),
+        0 16px 30px rgba(12, 4, 0, 0.26);
+    }
+
+    .folio-head {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .folio-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      line-height: 1.12;
+      letter-spacing: -0.018em;
+      font-family: "Palatino Linotype", Georgia, serif;
+    }
+
+    .folio-title::before {
+      content: "";
+      width: 22px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .folio-copy {
+      margin: 0;
+      color: rgba(234, 214, 184, 0.76);
+      font-size: 14px;
+      line-height: 1.72;
+      max-width: 296px;
+    }
+
+    .almanac-columns {
+      display: grid;
+      gap: 16px;
+    }
+
+    .ganzhi-block {
+      padding: 0 2px 14px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .ganzhi-value {
+      margin-top: 10px;
+      font-family: "Palatino Linotype", Georgia, serif;
+      font-size: 32px;
+      line-height: 1.06;
+      letter-spacing: -0.035em;
+    }
+
+    .split-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .text-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .entry {
+      padding: 0 2px 0 0;
+    }
+
+    .entry-head {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .entry p,
+    .time-note,
+    .ask-copy {
+      margin: 0;
+      color: rgba(234, 214, 184, 0.82);
+      font-size: 15px;
+      line-height: 1.74;
+    }
+
+    .rhythm-panel {
+      display: grid;
+      gap: 16px;
+      padding-top: 2px;
+    }
+
+    .rhythm-scale {
+      position: relative;
+      height: 74px;
+      border-top: 1px solid var(--line-soft);
+      border-bottom: 1px solid var(--line-soft);
+      background: rgba(255,255,255,0.01);
+      overflow: hidden;
+    }
+
+    .rhythm-scale svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .rhythm-scale path {
+      fill: none;
+      stroke: rgba(204,149,68,0.86);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .rhythm-hours {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 8px;
+      color: var(--paper-faint);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .timing-notes {
+      display: grid;
+      gap: 14px;
+    }
+
+    .time-block {
+      display: grid;
+      gap: 7px;
+      padding-left: 12px;
+      border-left: 1px solid rgba(204,149,68,0.34);
+    }
+
+    .time-value {
+      font-size: 30px;
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+      font-family: "Palatino Linotype", Georgia, serif;
+    }
+
+    .tip-panel {
+      position: relative;
+      padding: 18px 18px 16px;
+    }
+
+    .tip-copy {
+      margin: 0;
+      max-width: 305px;
+      color: rgba(234, 214, 184, 0.82);
+      font-size: 15px;
+      line-height: 1.78;
+    }
+
+    .ask-list {
+      display: grid;
+      gap: 14px;
+      padding-top: 2px;
+    }
+
+    .ask-item {
+      display: grid;
+      grid-template-columns: 18px 1fr auto;
+      gap: 10px;
+      align-items: baseline;
+      padding: 3px 0 5px;
+      color: var(--paper);
+      border-bottom: 1px solid rgba(234, 214, 184, 0.06);
+    }
+
+    .ask-index {
+      color: rgba(180,138,82,0.8);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .ask-copy {
+      color: var(--paper);
+      font-size: 19px;
+      line-height: 1.28;
+      letter-spacing: -0.012em;
+      font-family: "Palatino Linotype", Georgia, serif;
+    }
+
+    .ask-mark {
+      width: 26px;
+      height: 10px;
+      align-self: center;
+      opacity: 0.7;
+    }
+
+    .footer-line {
+      margin-top: 2px;
+      padding: 16px 18px 14px;
+      border-radius: 24px;
+      align-items: flex-end;
+      background: var(--card-footer);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.01),
+        0 16px 30px rgba(12, 4, 0, 0.28);
+    }
+
+    .footer-note {
+      max-width: 150px;
+      color: var(--paper-faint);
+      line-height: 1.56;
+    }
+
+    .cta-ribbon {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      color: var(--button-text);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      background: var(--button-bg);
+      border: 1px solid rgba(28, 10, 0, 0.12);
+      border-radius: 999px;
+      box-shadow: none;
+    }
+
+    .cta-ribbon::before {
+      content: none;
+    }
+
+    .cta-ribbon::after {
+      content: none;
+    }
+
+    @keyframes drift {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 36px rgba(180,138,82,0.1), inset 0 0 0 1px rgba(255,255,255,0.02); }
+      50% { box-shadow: 0 0 54px rgba(180,138,82,0.16), inset 0 0 0 1px rgba(255,255,255,0.03); }
+    }
+
+    @media (max-width: 520px) {
+      .phone { min-height: 960px; }
+      .hero-title { font-size: clamp(52px, 15vw, 70px); }
+      .split-columns,
+      .footer-line { grid-template-columns: 1fr; }
+      .footer-line {
+        display: grid;
+        gap: 14px;
+      }
+      .cta-ribbon { width: 100%; }
+      .topbar-date {
+        font-size: 16px;
+        white-space: normal;
+      }
+      .inscription-source {
+        font-size: 9px;
+        letter-spacing: 0.2em;
+      }
+      .orbital,
+      .sigil-core {
+        width: 86px;
+        height: 86px;
+      }
+      .sigil-core svg {
+        width: 46px;
+        height: 46px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" aria-label="Lantern Sage Today page refined with ritual parchment editorial design version 5">
+    <section class="screen">
+      <header class="topbar">
+        <div class="topbar-main">
+          <div class="seal" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 3.5v16.8"></path>
+              <path d="M7.2 8.1c1.4-1.8 2.9-2.7 4.8-2.7 1.9 0 3.4.9 4.8 2.7"></path>
+              <path d="M8.2 12h7.6"></path>
+              <path d="M9.1 15.6c.8.7 1.8 1 2.9 1 .9 0 1.9-.3 2.8-1"></path>
+              <path d="M10.1 19.1h3.8"></path>
+            </svg>
+          </div>
+          <div class="topbar-date" aria-label="Current Gregorian date">April 10, 2026 - Friday</div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-panel">
+          <div class="hero-inscription">
+            <div class="inscription-source">Clear and Bright · Jia-Wu day</div>
+          </div>
+
+          <div class="sigil-wrap">
+            <div class="sigil-stage" aria-hidden="true">
+              <div class="orbital"></div>
+              <div class="sigil-rays"></div>
+              <div class="sigil-core">
+                <svg viewBox="0 0 24 24" aria-label="Seasonal day seal">
+                  <path d="M12 3.2v17.6"></path>
+                  <path d="M6.6 8.4c1.3-2.2 3.1-3.3 5.4-3.3 2.3 0 4.1 1.1 5.4 3.3"></path>
+                  <path d="M8.2 12.2h7.6"></path>
+                  <path d="M8.7 15.2c1 .9 2.1 1.3 3.3 1.3 1.2 0 2.3-.4 3.3-1.3"></path>
+                  <path d="M9.9 19h4.2"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="meta-stack">
+            <h1 class="hero-title">Move where the day opens.</h1>
+            <svg class="carved-line" viewBox="0 0 190 18" aria-hidden="true">
+              <path d="M1 9 C15 1 29 1 43 9 C57 17 71 17 85 9 C99 1 113 1 127 9 C141 17 155 17 169 9 C177 4 184 4 189 9" fill="none" stroke="#ead6b8" stroke-width="1.8" stroke-linecap="round" opacity="0.92"></path>
+            </svg>
+            <p class="lead">Move before the day crowds. Let order arrive first, and effort follow after.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="folio">
+        <section class="folio-section">
+          <div class="folio-head">
+            <div class="micro-label">Core almanac</div>
+            <div class="folio-title">The central reading</div>
+            <p class="folio-copy">Read this card as the plain judgment of the day: what opens easily, what should wait, and where the current turns favorable.</p>
+          </div>
+
+          <div class="almanac-columns">
+            <div class="ganzhi-block">
+              <div class="micro-label">Stem and branch</div>
+              <div class="ganzhi-value">Clear and Bright season - Jia-Wu day</div>
+            </div>
+
+            <div class="split-columns">
+              <div class="text-list">
+                <div class="entry">
+                  <div class="entry-head"><svg class="fact-icon" viewBox="0 0 16 16"><path d="M3 8.4 6.2 11.5 13 4.8"></path></svg><div class="section-label">Good for</div></div>
+                  <p>Prayer. Travel. Small repairs. Study. Meeting. Quiet settling.</p>
+                </div>
+                <div class="entry">
+                  <div class="entry-head"><svg class="fact-icon" viewBox="0 0 16 16"><path d="M4 4l8 8"></path><path d="M12 4 4 12"></path></svg><div class="section-label">Avoid</div></div>
+                  <p>Opening trade. Breaking ground. Moving house. Burial matters. Late disputes.</p>
+                </div>
+              </div>
+
+              <div class="text-list">
+                <div class="entry">
+                  <div class="entry-head"><svg class="fact-icon" viewBox="0 0 16 16"><path d="M8 2.4v11.2"></path><path d="M8 2.4l2.2 2.2"></path><path d="M8 2.4 5.8 4.6"></path><path d="M13.6 8H2.4"></path></svg><div class="section-label">Fortune directions</div></div>
+                  <p>Wealth: North. Joy: Northeast. Blessing: South.</p>
+                </div>
+                <div class="entry">
+                  <div class="entry-head"><svg class="fact-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.6"></circle><path d="M8 4.4v3.2l2.2 1.5"></path></svg><div class="section-label">Conflict and lodge</div></div>
+                  <p>Clash: Rat. Sha: North. Lodge: Room. Avoid haste in vows.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="folio-section">
+          <div class="folio-head">
+            <div class="micro-label">Timing information</div>
+            <div class="folio-title">The day moves in waves</div>
+            <p class="folio-copy">Energy rises cleanly in the morning, steadies through noon, and thickens toward the late hours. Use the scale as rhythm, not as a mechanical schedule.</p>
+          </div>
+
+          <div class="rhythm-panel">
+            <div class="rhythm-scale" aria-label="Daily rhythm scale">
+              <svg viewBox="0 0 360 68" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M4 40 C28 38 42 18 64 18 C89 18 95 34 120 34 C148 34 154 12 180 12 C208 12 214 48 244 48 C272 48 282 28 310 28 C330 28 340 34 356 34"></path>
+              </svg>
+            </div>
+            <div class="rhythm-hours">
+              <span>Dawn</span>
+              <span>Noon</span>
+              <span>Dusk</span>
+              <span>Night</span>
+            </div>
+
+            <div class="timing-notes">
+              <div class="time-block">
+                <div class="section-label">Best time to go out</div>
+                <div class="time-value">8:30 AM - 10:30 AM</div>
+                <div class="time-note">Earlier movement carries a cleaner current.</div>
+              </div>
+              <div class="time-block">
+                <div class="section-label">Time to avoid</div>
+                <div class="time-value">6:30 PM - 8:30 PM</div>
+                <div class="time-note">The late hours feel crowded and reactive.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="folio-section tip-panel">
+          <div class="folio-head">
+            <div class="micro-label">One practical suggestion</div>
+            <div class="folio-title">A small adjustment before noon</div>
+          </div>
+          <p class="tip-copy">Reset one visible surface near your entrance before noon, even if it is only a shelf, a chair, or one small table.</p>
+        </section>
+
+        <section class="folio-section">
+          <div class="folio-head">
+            <div class="ask-kicker">Quick ask</div>
+            <div class="folio-title">Questions at the margin</div>
+            <p class="folio-copy">These are the day’s likely concerns, written as margin prompts rather than as commands. Open one when you need a narrower reading.</p>
+          </div>
+
+          <div class="ask-list" aria-label="Suggested questions">
+            <div class="ask-item">
+              <div class="ask-index">I</div>
+              <div class="ask-copy">Is it wise to go out today?</div>
+              <svg class="ask-mark" viewBox="0 0 26 10" aria-hidden="true"><path d="M1 5 C5 2 9 2 13 5 C17 8 21 8 25 5" fill="none" stroke="#b48a52" stroke-width="1.3" stroke-linecap="round"></path></svg>
+            </div>
+            <div class="ask-item">
+              <div class="ask-index">II</div>
+              <div class="ask-copy">Is this a fitting day to meet someone?</div>
+              <svg class="ask-mark" viewBox="0 0 26 10" aria-hidden="true"><path d="M1 5 C5 2 9 2 13 5 C17 8 21 8 25 5" fill="none" stroke="#b48a52" stroke-width="1.3" stroke-linecap="round"></path></svg>
+            </div>
+            <div class="ask-item">
+              <div class="ask-index">III</div>
+              <div class="ask-copy">Can a difficult discussion land cleanly?</div>
+              <svg class="ask-mark" viewBox="0 0 26 10" aria-hidden="true"><path d="M1 5 C5 2 9 2 13 5 C17 8 21 8 25 5" fill="none" stroke="#b48a52" stroke-width="1.3" stroke-linecap="round"></path></svg>
+            </div>
+            <div class="ask-item">
+              <div class="ask-index">IV</div>
+              <div class="ask-copy">Would the home respond well to adjustment?</div>
+              <svg class="ask-mark" viewBox="0 0 26 10" aria-hidden="true"><path d="M1 5 C5 2 9 2 13 5 C17 8 21 8 25 5" fill="none" stroke="#b48a52" stroke-width="1.3" stroke-linecap="round"></path></svg>
+            </div>
+          </div>
+        </section>
+
+        <div class="footer-line">
+          <div class="footer-note">2 free reads today<br>open the daily reading</div>
+          <div class="cta-ribbon">Enter today's reading</div>
+        </div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>

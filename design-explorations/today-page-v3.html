@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lantern Sage ， Today ， V3</title>
+  <style>
+    :root {
+      --bg: #e6d7c0;
+      --bg-deep: #d7c3a3;
+      --paper: #f8f1e4;
+      --paper-warm: #f0e1c7;
+      --ink: #221712;
+      --ink-soft: #5d493d;
+      --ink-faint: rgba(34, 23, 18, 0.5);
+      --seal: #a6382d;
+      --seal-dark: #7f241b;
+      --jade: #536b59;
+      --gold: #9f7640;
+      --line: rgba(48, 31, 20, 0.16);
+      --line-strong: rgba(48, 31, 20, 0.28);
+      --shadow: 0 30px 80px rgba(72, 43, 23, 0.18);
+      --radius-xl: 34px;
+      --radius-lg: 26px;
+      --radius-md: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(159, 118, 64, 0.22), transparent 20%),
+        radial-gradient(circle at bottom right, rgba(83, 107, 89, 0.12), transparent 26%),
+        linear-gradient(180deg, #eadfcf 0%, #dfcfb4 55%, #d7c29e 100%);
+      padding: 26px;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(52, 35, 23, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(52, 35, 23, 0.035) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(circle at center, black 45%, transparent 88%);
+      opacity: 0.35;
+    }
+
+    .stage {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 300px minmax(340px, 520px) 340px;
+      gap: 28px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .note,
+    .artifact,
+    .rail-card {
+      background: rgba(248, 241, 228, 0.54);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .note,
+    .rail-card {
+      border-radius: var(--radius-xl);
+      padding: 26px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: rgba(255,255,255,0.34);
+      color: var(--seal);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .display,
+    .hero-copy,
+    .section-head,
+    .ritual-title,
+    .rail-title,
+    .time-value {
+      font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    }
+
+    .display {
+      margin: 20px 0 12px;
+      font-size: 46px;
+      line-height: 0.94;
+      letter-spacing: -0.045em;
+    }
+
+    .copy {
+      margin: 0;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .artifact {
+      position: relative;
+      min-height: 900px;
+      border-radius: 52px;
+      padding: 18px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top center, rgba(159, 118, 64, 0.22), transparent 24%),
+        linear-gradient(180deg, rgba(250, 246, 238, 0.94), rgba(240, 226, 202, 0.96));
+    }
+
+    .artifact::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 40px;
+      border: 1px solid rgba(49, 32, 20, 0.12);
+      pointer-events: none;
+    }
+
+    .artifact::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at top right, rgba(166, 56, 45, 0.08), transparent 22%),
+        radial-gradient(circle at left bottom, rgba(83, 107, 89, 0.08), transparent 28%),
+        linear-gradient(180deg, transparent 0%, rgba(34, 23, 18, 0.02) 100%);
+    }
+
+    .sheet {
+      position: relative;
+      height: 100%;
+      border-radius: 36px;
+      overflow: hidden;
+      padding: 28px 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.06));
+    }
+
+    .sheet::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, transparent 12%, rgba(52, 35, 23, 0.04) 12%, rgba(52, 35, 23, 0.04) 12.4%, transparent 12.4%, transparent 87.6%, rgba(52, 35, 23, 0.04) 87.6%, rgba(52, 35, 23, 0.04) 88%, transparent 88%),
+        linear-gradient(180deg, transparent 17%, rgba(52, 35, 23, 0.04) 17%, rgba(52, 35, 23, 0.04) 17.25%, transparent 17.25%, transparent 81.8%, rgba(52, 35, 23, 0.04) 81.8%, rgba(52, 35, 23, 0.04) 82.05%, transparent 82.05%);
+      opacity: 0.9;
+    }
+
+    .topline {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .crest {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .seal-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(180deg, var(--seal), var(--seal-dark));
+      color: #fff2ea;
+      font-weight: 700;
+      box-shadow: 0 12px 28px rgba(166, 56, 45, 0.18);
+    }
+
+    .brand {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--ink-soft);
+    }
+
+    .date-block {
+      text-align: right;
+      color: var(--ink-soft);
+      font-size: 12px;
+      line-height: 1.4;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 90px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .hero-copy {
+      margin: 0;
+      font-size: 40px;
+      line-height: 0.96;
+      letter-spacing: -0.05em;
+      max-width: 10ch;
+    }
+
+    .vertical-stamp {
+      align-self: stretch;
+      min-height: 168px;
+      border-radius: 22px;
+      border: 1px solid rgba(166, 56, 45, 0.18);
+      background:
+        linear-gradient(180deg, rgba(166, 56, 45, 0.08), rgba(166, 56, 45, 0.02));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--seal);
+      font-size: 14px;
+      letter-spacing: 0.24em;
+      writing-mode: vertical-rl;
+      text-transform: uppercase;
+    }
+
+    .divider {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink-faint);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      height: 1px;
+      background: var(--line-strong);
+      flex: 1;
+    }
+
+    .almanac-body {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 22px;
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .block {
+      padding: 0 2px;
+    }
+
+    .section-head {
+      margin: 0 0 10px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .section-label {
+      margin-bottom: 8px;
+      color: var(--ink-faint);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .ritual-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      color: var(--ink-soft);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .ritual-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .ritual-list li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 7px;
+      background: var(--jade);
+      box-shadow: 0 0 0 5px rgba(83, 107, 89, 0.09);
+      flex: none;
+    }
+
+    .ritual-list.avoid li::before {
+      background: var(--seal);
+      box-shadow: 0 0 0 5px rgba(166, 56, 45, 0.08);
+    }
+
+    .time-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .time-card {
+      padding: 14px 0 14px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .time-value {
+      font-size: 28px;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .time-meta {
+      margin-top: 6px;
+      color: var(--ink-soft);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .tip-panel {
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.26);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tip-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: linear-gradient(180deg, var(--gold), var(--seal));
+    }
+
+    .tip-copy {
+      color: var(--ink-soft);
+      font-size: 15px;
+      line-height: 1.72;
+      margin: 0;
+    }
+
+    .action-ribbon {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .tag {
+      min-height: 98px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.46), rgba(255,255,255,0.14));
+      padding: 12px 12px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tag::after {
+      content: "";
+      position: absolute;
+      right: 12px;
+      top: 10px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(159, 118, 64, 0.18);
+      opacity: 0.7;
+    }
+
+    .tag-top {
+      color: var(--seal);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .tag-copy {
+      font-size: 14px;
+      line-height: 1.35;
+      color: var(--ink);
+      max-width: 8ch;
+    }
+
+    .footline {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .side-slip {
+      border-radius: 22px;
+      border: 1px solid rgba(166, 56, 45, 0.16);
+      background: rgba(166, 56, 45, 0.06);
+      padding: 18px;
+    }
+
+    .slip-price {
+      color: var(--seal);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      margin-bottom: 10px;
+    }
+
+    .ritual-title {
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.06;
+      font-weight: 500;
+    }
+
+    .slip-copy {
+      margin: 0 0 14px;
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      background: linear-gradient(180deg, var(--seal), var(--seal-dark));
+      color: #fff4eb;
+      box-shadow: 0 12px 28px rgba(166, 56, 45, 0.16);
+    }
+
+    .feedback-strip {
+      padding: 10px 0 0;
+    }
+
+    .feedback-head {
+      margin-bottom: 12px;
+      color: var(--ink-faint);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .feedback-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .feedback-pill {
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.34);
+      color: var(--ink);
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feedback-pill.active {
+      background: rgba(166, 56, 45, 0.08);
+      border-color: rgba(166, 56, 45, 0.2);
+      color: var(--seal);
+    }
+
+    .rail {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .rail-title {
+      margin: 18px 0 10px;
+      font-size: 26px;
+      line-height: 1.02;
+      font-weight: 500;
+    }
+
+    .rail-copy {
+      margin: 0;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .rail-list {
+      list-style: none;
+      margin: 14px 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .rail-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink-soft);
+      font-size: 14px;
+    }
+
+    .rail-list li:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .rail-list strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    @media (max-width: 1180px) {
+      .stage {
+        grid-template-columns: 1fr;
+        max-width: 620px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      .artifact { min-height: auto; border-radius: 34px; }
+      .hero { grid-template-columns: 1fr; }
+      .vertical-stamp { min-height: 58px; writing-mode: horizontal-tb; letter-spacing: 0.18em; }
+      .almanac-body,
+      .footline,
+      .action-ribbon {
+        grid-template-columns: 1fr;
+      }
+      .hero-copy { font-size: 34px; }
+      .display { font-size: 38px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <section class="note">
+      <div class="eyebrow">UI UX Pro Max</div>
+      <h1 class="display">Lantern Sage should feel like opening a living almanac, not a utility dashboard.</h1>
+      <p class="copy">
+        This direction removes the card stack feeling. The page becomes a single daily artifact with sections embedded into one
+        reading surface: title, rhythm, guidance, timing, action tags, and ritual slips.
+      </p>
+    </section>
+
+    <section class="artifact" aria-label="Lantern Sage Today page V3">
+      <div class="sheet">
+        <div class="topline">
+          <div class="crest">
+            <div class="seal-mark">咫</div>
+            <div class="brand">Lantern Sage</div>
+          </div>
+          <div class="date-block">
+            <div>Friday, Apr 10</div>
+            <div>Shanghai ， GMT+8</div>
+          </div>
+        </div>
+
+        <section class="hero">
+          <p class="hero-copy">A day that rewards clear pacing, lighter movement, and one deliberate reset.</p>
+          <div class="vertical-stamp">today read</div>
+        </section>
+
+        <div class="divider">daily guidance</div>
+
+        <section class="almanac-body">
+          <div class="column">
+            <div class="block">
+              <div class="section-label">Good for</div>
+              <ul class="ritual-list">
+                <li>Short errands with a fixed purpose</li>
+                <li>Simple meetings that stay warm and brief</li>
+                <li>Putting order around unfinished tasks</li>
+              </ul>
+            </div>
+
+            <div class="block">
+              <div class="section-label">Timing</div>
+              <div class="time-grid">
+                <div class="time-card">
+                  <div class="section-head">Best time to go out</div>
+                  <div class="time-value">8:30 AM - 10:30 AM</div>
+                  <div class="time-meta">Lighter movement and cleaner decisions come earlier today.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="column">
+            <div class="block">
+              <div class="section-label">Avoid</div>
+              <ul class="ritual-list avoid">
+                <li>Emotion-heavy conversations after the day has already become crowded</li>
+                <li>Adding new promises in the late hours</li>
+                <li>Trying to repair tension by force</li>
+              </ul>
+            </div>
+
+            <div class="block">
+              <div class="section-label">Timing</div>
+              <div class="time-grid">
+                <div class="time-card">
+                  <div class="section-head">Time to avoid</div>
+                  <div class="time-value">6:30 PM - 8:30 PM</div>
+                  <div class="time-meta">Late energy turns less steady and more reactive.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tip-panel">
+          <div class="section-label">One practical suggestion</div>
+          <p class="tip-copy">Reset the area nearest your entrance before noon, even if it is only one chair, one shelf, or one surface.</p>
+        </section>
+
+        <div class="divider">quick actions</div>
+
+        <section class="action-ribbon">
+          <div class="tag">
+            <div class="tag-top">Ask</div>
+            <div class="tag-copy">Go out</div>
+          </div>
+          <div class="tag">
+            <div class="tag-top">Ask</div>
+            <div class="tag-copy">Meet someone</div>
+          </div>
+          <div class="tag">
+            <div class="tag-top">Ask</div>
+            <div class="tag-copy">Discuss something important</div>
+          </div>
+          <div class="tag">
+            <div class="tag-top">Ask</div>
+            <div class="tag-copy">Adjust home</div>
+          </div>
+        </section>
+
+        <section class="footline">
+          <div class="side-slip">
+            <div class="slip-price">Important Date Pack ， $4.99</div>
+            <h2 class="ritual-title">A separate read for one specific day.</h2>
+            <p class="slip-copy">Use this when the date matters more than the general rhythm of today.</p>
+            <a href="#" class="button">Open focused read</a>
+          </div>
+
+          <div class="feedback-strip">
+            <div class="feedback-head">How did today feel?</div>
+            <div class="feedback-actions">
+              <div class="feedback-pill">Accurate</div>
+              <div class="feedback-pill active">Neutral</div>
+              <div class="feedback-pill">Inaccurate</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <aside class="rail">
+      <article class="rail-card">
+        <div class="eyebrow">Direction</div>
+        <h2 class="rail-title">Less app screen, more contemporary ritual object.</h2>
+        <p class="rail-copy">
+          The page is composed as one readable artifact. Modules still exist, but they no longer feel like stacked product cards.
+        </p>
+      </article>
+
+      <article class="rail-card">
+        <div class="eyebrow">Visual Keys</div>
+        <ul class="rail-list">
+          <li><strong>Form</strong><span>single sheet over nested cards</span></li>
+          <li><strong>Mood</strong><span>historical, quiet, culturally rooted</span></li>
+          <li><strong>Hierarchy</strong><span>hero statement first, details embedded</span></li>
+          <li><strong>Commerce</strong><span>ritual slip, not a marketing panel</span></li>
+        </ul>
+      </article>
+    </aside>
+  </main>
+</body>
+</html>

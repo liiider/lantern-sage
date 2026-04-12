@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lantern Sage °§ Today °§ V2</title>
+  <style>
+    :root {
+      --paper: #f6f0e6;
+      --paper-deep: #efe4d2;
+      --ink: #2e241c;
+      --ink-soft: #665749;
+      --line: rgba(76, 55, 37, 0.16);
+      --line-strong: rgba(76, 55, 37, 0.28);
+      --red: #b54936;
+      --red-soft: rgba(181, 73, 54, 0.12);
+      --jade: #5d7b66;
+      --jade-soft: rgba(93, 123, 102, 0.13);
+      --gold: #b48951;
+      --gold-soft: rgba(180, 137, 81, 0.14);
+      --shadow: 0 30px 80px rgba(64, 43, 25, 0.12);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(180, 137, 81, 0.14), transparent 22%),
+        radial-gradient(circle at right center, rgba(93, 123, 102, 0.1), transparent 26%),
+        linear-gradient(180deg, #fbf7f1, #f4ede1 46%, #efe5d6 100%);
+      padding: 32px;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(73, 50, 33, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(73, 50, 33, 0.03) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: radial-gradient(circle at center, black 52%, transparent 92%);
+      opacity: 0.45;
+    }
+    .layout {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 360px minmax(340px, 460px) 340px;
+      gap: 28px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .note, .phone, .rail-card {
+      background: rgba(255, 251, 245, 0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .note, .rail-card { border-radius: var(--radius-xl); padding: 26px; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      color: var(--red);
+      background: rgba(255,255,255,0.5);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+    .title, .hero-copy, .section-title, .metric-value {
+      font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    }
+    .title {
+      margin: 20px 0 12px;
+      font-size: 48px;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+    .body-copy {
+      margin: 0;
+      color: var(--ink-soft);
+      line-height: 1.68;
+      font-size: 15px;
+    }
+    .mini-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .mini-card {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.55);
+      border: 1px solid var(--line);
+    }
+    .mini-label {
+      color: var(--ink-soft);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 8px;
+    }
+    .mini-value { font-size: 15px; line-height: 1.4; }
+    .phone {
+      position: relative;
+      border-radius: 42px;
+      padding: 16px;
+      min-height: 860px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255, 253, 248, 0.94), rgba(246, 239, 228, 0.94)),
+        radial-gradient(circle at top center, rgba(180, 137, 81, 0.12), transparent 28%);
+    }
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 124px;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(78, 58, 40, 0.1);
+      border: 1px solid rgba(78, 58, 40, 0.08);
+    }
+    .screen {
+      position: relative;
+      border-radius: 30px;
+      height: 100%;
+      padding: 30px 12px 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0.08));
+    }
+    .screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 30px;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at top right, rgba(181, 73, 54, 0.08), transparent 24%),
+        radial-gradient(circle at left bottom, rgba(93, 123, 102, 0.08), transparent 28%);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 8px 0;
+      position: relative;
+      z-index: 1;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .seal {
+      width: 34px; height: 34px; display: grid; place-items: center;
+      border-radius: 12px; background: var(--red); color: #fff5ef; font-weight: 700;
+      box-shadow: 0 10px 24px rgba(181, 73, 54, 0.22);
+    }
+    .brand-name {
+      font-size: 14px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .icon-button {
+      width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+      font-size: 16px; color: var(--ink); border: 1px solid var(--line);
+      background: rgba(255,255,255,0.58);
+    }
+    .panel {
+      position: relative;
+      z-index: 1;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.5);
+      overflow: hidden;
+    }
+    .hero {
+      padding: 22px 20px 20px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.44)),
+        radial-gradient(circle at top right, rgba(180, 137, 81, 0.1), transparent 28%);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 auto;
+      width: 132px; height: 132px; border-radius: 50%;
+      border: 1px solid rgba(180, 137, 81, 0.14);
+      transform: translate(28px, 28px);
+      background: radial-gradient(circle at center, rgba(180, 137, 81, 0.08), transparent 62%);
+    }
+    .meta {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      color: var(--ink-soft); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+    .hero-copy {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+      max-width: 11ch;
+    }
+    .hero-bottom {
+      margin-top: 18px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .tone {
+      display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px;
+      border-radius: 999px; border: 1px solid rgba(93, 123, 102, 0.2);
+      background: var(--jade-soft); color: var(--jade); text-transform: uppercase;
+      letter-spacing: 0.14em; font-size: 11px;
+    }
+    .stamp {
+      width: 46px; height: 46px; border-radius: 16px; display: grid; place-items: center;
+      background: rgba(181, 73, 54, 0.08); border: 1px solid rgba(181, 73, 54, 0.16);
+      color: var(--red); font-size: 13px; font-weight: 700; transform: rotate(-6deg);
+    }
+    .double-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .card { padding: 18px; }
+    .section-title { margin: 0 0 12px; font-size: 19px; font-weight: 500; }
+    .list {
+      list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;
+      font-size: 14px; line-height: 1.45; color: var(--ink-soft);
+    }
+    .list li { display: flex; align-items: center; gap: 10px; }
+    .list li::before {
+      content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--jade);
+      box-shadow: 0 0 0 5px rgba(93, 123, 102, 0.09); flex: none;
+    }
+    .list.avoid li::before {
+      background: var(--red); box-shadow: 0 0 0 5px rgba(181, 73, 54, 0.08);
+    }
+    .timing { padding: 18px; }
+    .timing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .timing-item {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--line-strong);
+      background: rgba(255,255,255,0.36);
+    }
+    .timing-label {
+      color: var(--ink-soft);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 10px;
+    }
+    .timing-value {
+      font-family: "Iowan Old Style", Georgia, serif;
+      font-size: 25px;
+      line-height: 1.06;
+      letter-spacing: -0.03em;
+    }
+    .tip { padding: 18px; display: flex; gap: 14px; align-items: flex-start; }
+    .tip-icon {
+      width: 36px; height: 36px; border-radius: 14px; flex: none; display: grid; place-items: center;
+      background: var(--gold-soft); color: var(--gold); border: 1px solid rgba(180, 137, 81, 0.18);
+      font-size: 16px;
+    }
+    .tip-copy { color: var(--ink-soft); font-size: 14px; line-height: 1.65; margin-top: 1px; }
+    .ask { padding: 18px; }
+    .ask-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .ask-btn {
+      min-height: 76px; padding: 14px; border-radius: 18px; border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.42));
+      text-align: left; color: var(--ink); display: flex; flex-direction: column;
+      justify-content: space-between; gap: 8px;
+    }
+    .ask-tag {
+      color: var(--red); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em;
+    }
+    .ask-copy { font-size: 14px; line-height: 1.35; }
+    .subtle { margin-top: 12px; color: var(--ink-soft); font-size: 12px; }
+    .cta {
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(181, 73, 54, 0.06), rgba(180, 137, 81, 0.06)), rgba(255,255,255,0.5);
+    }
+    .cta-head {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px;
+    }
+    .cta-title {
+      margin: 0;
+      font-family: "Iowan Old Style", Georgia, serif;
+      font-size: 21px;
+      font-weight: 500;
+    }
+    .price { color: var(--red); font-size: 14px; text-transform: uppercase; letter-spacing: 0.12em; }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 18px;
+      border-radius: 999px; text-decoration: none; border: 1px solid transparent; font-size: 14px; font-weight: 600;
+    }
+    .button-primary {
+      color: #fff8f1; background: linear-gradient(180deg, #b84d39, #993726);
+      box-shadow: 0 14px 34px rgba(181, 73, 54, 0.18);
+    }
+    .feedback { padding: 18px; }
+    .feedback-controls {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .feedback-btn {
+      min-height: 44px; border-radius: 14px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.5); color: var(--ink); font-size: 13px;
+    }
+    .feedback-btn.active {
+      background: var(--red-soft); border-color: rgba(181, 73, 54, 0.22); color: var(--red);
+    }
+    .history { padding: 18px; }
+    .history-item { padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .history-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .history-date {
+      color: var(--red); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 8px;
+    }
+    .history-copy { font-size: 15px; line-height: 1.5; margin-bottom: 6px; }
+    .history-meta { color: var(--ink-soft); font-size: 12px; }
+    .rail { display: flex; flex-direction: column; gap: 18px; }
+    .rail-card h3 {
+      margin: 18px 0 8px; font-size: 22px; line-height: 1.15;
+      font-family: "Iowan Old Style", Georgia, serif; font-weight: 500;
+    }
+    .rail-copy { margin: 0; color: var(--ink-soft); line-height: 1.68; font-size: 14px; }
+    .rail-list {
+      margin: 16px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px;
+    }
+    .rail-list li {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--line); color: var(--ink-soft); font-size: 14px;
+    }
+    .rail-list li:last-child { border-bottom: none; padding-bottom: 0; }
+    .rail-list strong { color: var(--ink); font-weight: 600; }
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: 1fr; max-width: 560px; }
+    }
+    @media (max-width: 560px) {
+      body { padding: 14px; }
+      .phone { border-radius: 32px; min-height: auto; }
+      .double-panel, .timing-grid, .ask-grid, .feedback-controls, .mini-grid { grid-template-columns: 1fr; }
+      .title { font-size: 38px; }
+      .hero-copy { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="layout">
+    <section class="note">
+      <div class="eyebrow">UI UX Pro Max</div>
+      <h1 class="title">A paper-led almanac, calmer and lighter than the dark version.</h1>
+      <p class="body-copy">
+        This direction treats Lantern Sage more like a modern printed ritual object than a mystical dashboard. It is warmer,
+        brighter, and more editorial, with stronger daytime utility.
+      </p>
+      <div class="mini-grid">
+        <div class="mini-card">
+          <div class="mini-label">Tone</div>
+          <div class="mini-value">Refined, daytime, editorial</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">Style</div>
+          <div class="mini-value">Paper, seal red, structured calm</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="phone" aria-label="Lantern Sage Today page visual direction two">
+      <div class="screen">
+        <header class="topbar">
+          <div class="brand">
+            <div class="seal">”°</div>
+            <div class="brand-name">Lantern Sage</div>
+          </div>
+          <div class="icon-button">°Ú</div>
+        </header>
+
+        <article class="panel hero">
+          <div class="meta">
+            <span>Friday, Apr 10</span>
+            <span>Shanghai °§ GMT+8</span>
+          </div>
+          <p class="hero-copy">A cleaner day for measured choices and lighter movement.</p>
+          <div class="hero-bottom">
+            <div class="tone">practical</div>
+            <div class="stamp">ΩÒ»’</div>
+          </div>
+        </article>
+
+        <div class="double-panel">
+          <article class="panel card">
+            <h2 class="section-title">Good for</h2>
+            <ul class="list">
+              <li>Simple errands</li>
+              <li>Brief meetups</li>
+              <li>Sorting loose plans</li>
+            </ul>
+          </article>
+
+          <article class="panel card">
+            <h2 class="section-title">Avoid</h2>
+            <ul class="list avoid">
+              <li>Emotion-heavy talks</li>
+              <li>Last-minute promises</li>
+              <li>Late overbooking</li>
+            </ul>
+          </article>
+        </div>
+
+        <article class="panel timing">
+          <h2 class="section-title">Timing</h2>
+          <div class="timing-grid">
+            <div class="timing-item">
+              <div class="timing-label">Best time to go out</div>
+              <div class="timing-value">8:30 AM<br>10:30 AM</div>
+            </div>
+            <div class="timing-item">
+              <div class="timing-label">Time to avoid</div>
+              <div class="timing-value">6:30 PM<br>8:30 PM</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel tip">
+          <div class="tip-icon">°ı</div>
+          <div>
+            <h2 class="section-title" style="margin-bottom:8px;">One practical suggestion</h2>
+            <div class="tip-copy">Reset the area nearest your door before you leave or start your first call.</div>
+          </div>
+        </article>
+
+        <article class="panel ask">
+          <h2 class="section-title">Quick Ask</h2>
+          <div class="ask-grid">
+            <button class="ask-btn" type="button">
+              <span class="ask-tag">Ask</span>
+              <span class="ask-copy">Go out</span>
+            </button>
+            <button class="ask-btn" type="button">
+              <span class="ask-tag">Ask</span>
+              <span class="ask-copy">Meet someone</span>
+            </button>
+            <button class="ask-btn" type="button">
+              <span class="ask-tag">Ask</span>
+              <span class="ask-copy">Discuss something important</span>
+            </button>
+            <button class="ask-btn" type="button">
+              <span class="ask-tag">Ask</span>
+              <span class="ask-copy">Adjust home</span>
+            </button>
+          </div>
+          <div class="subtle">2 free reads today</div>
+        </article>
+
+        <article class="panel cta">
+          <div class="cta-head">
+            <h3 class="cta-title">Important Date Pack</h3>
+            <div class="price">$4.99</div>
+          </div>
+          <p class="body-copy" style="margin-bottom:14px;">
+            For one specific date: better windows, what to avoid, and one preparation note.
+          </p>
+          <a class="button button-primary" href="#">Open focused read</a>
+        </article>
+
+        <article class="panel feedback">
+          <h2 class="section-title">How did today feel?</h2>
+          <p class="body-copy">A short signal helps shape your rhythm over time.</p>
+          <div class="feedback-controls">
+            <button class="feedback-btn" type="button">Accurate</button>
+            <button class="feedback-btn" type="button">Neutral</button>
+            <button class="feedback-btn active" type="button">Inaccurate</button>
+          </div>
+        </article>
+
+        <article class="panel history">
+          <h2 class="section-title">Recent rhythm</h2>
+          <div class="history-item">
+            <div class="history-date">Thu, Apr 9</div>
+            <div class="history-copy">Better for routine tasks and lighter conversations.</div>
+            <div class="history-meta">2 asks °§ Accurate</div>
+          </div>
+          <div class="history-item">
+            <div class="history-date">Wed, Apr 8</div>
+            <div class="history-copy">A quieter day for slow pacing and small resets.</div>
+            <div class="history-meta">1 ask °§ Neutral</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <aside class="rail">
+      <article class="rail-card">
+        <div class="eyebrow">Contrast Point</div>
+        <h3>More editorial, less cinematic.</h3>
+        <p class="rail-copy">
+          This version feels closer to a premium printed almanac or cultural object. It trades mystery-heavy atmosphere
+          for clarity and tactile structure.
+        </p>
+      </article>
+
+      <article class="rail-card">
+        <div class="eyebrow">Hierarchy</div>
+        <ul class="rail-list">
+          <li><strong>1</strong><span>Daily message stays dominant</span></li>
+          <li><strong>2</strong><span>Good / Avoid read as paired judgment</span></li>
+          <li><strong>3</strong><span>Timing remains fast to scan</span></li>
+          <li><strong>4</strong><span>Ask and paid CTA stay secondary</span></li>
+        </ul>
+      </article>
+
+      <article class="rail-card">
+        <div class="eyebrow">Decision Prompt</div>
+        <p class="rail-copy">
+          If this is closer, the next move is to choose whether Lantern Sage should become even more cultural and paper-like,
+          or stop here and keep more app-like utility.
+        </p>
+      </article>
+    </aside>
+  </main>
+</body>
+</html>

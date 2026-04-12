@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lantern Sage ， Today ， V4</title>
+  <style>
+    :root {
+      --obsidian: #130d0a;
+      --stone: #251913;
+      --ash: #3a2b23;
+      --bone: #e9dbc2;
+      --bone-dim: #c8b396;
+      --dust: rgba(233, 219, 194, 0.55);
+      --seal: #9e3f31;
+      --seal-dark: #6f261c;
+      --glyph: #e7cfaf;
+      --glow: rgba(227, 182, 113, 0.22);
+      --hairline: rgba(233, 219, 194, 0.14);
+      --shadow: 0 44px 120px rgba(0, 0, 0, 0.48);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(158, 63, 49, 0.14), transparent 20%),
+        radial-gradient(circle at 20% 80%, rgba(227, 182, 113, 0.08), transparent 24%),
+        linear-gradient(180deg, #17100d 0%, #0f0b09 54%, #090706 100%);
+      overflow: hidden;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--bone);
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at center, transparent 0%, transparent 58%, rgba(0,0,0,0.46) 100%),
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: auto, 30px 30px, 30px 30px;
+      opacity: 0.42;
+    }
+
+    body::after {
+      background:
+        radial-gradient(circle at 15% 18%, rgba(255,255,255,0.04), transparent 12%),
+        radial-gradient(circle at 80% 24%, rgba(255,255,255,0.03), transparent 10%),
+        radial-gradient(circle at 35% 72%, rgba(255,255,255,0.025), transparent 14%);
+      mix-blend-mode: screen;
+      opacity: 0.28;
+    }
+
+    .phone {
+      width: min(420px, 100%);
+      min-height: 860px;
+      border-radius: 48px;
+      padding: 18px;
+      background:
+        linear-gradient(180deg, rgba(33, 22, 17, 0.94), rgba(18, 13, 10, 0.98)),
+        radial-gradient(circle at top center, rgba(227, 182, 113, 0.08), transparent 24%);
+      border: 1px solid rgba(233, 219, 194, 0.08);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 124px;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255,255,255,0.04);
+      z-index: 4;
+    }
+
+    .screen {
+      position: relative;
+      min-height: 824px;
+      border-radius: 34px;
+      overflow: hidden;
+      padding: 34px 20px 22px;
+      background:
+        radial-gradient(circle at top center, rgba(227, 182, 113, 0.08), transparent 22%),
+        linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0));
+    }
+
+    .screen::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 28px;
+      border: 1px solid rgba(233, 219, 194, 0.06);
+      pointer-events: none;
+    }
+
+    .screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 28%, rgba(227, 182, 113, 0.14), transparent 20%),
+        radial-gradient(circle at 50% 82%, rgba(158, 63, 49, 0.08), transparent 16%);
+      opacity: 0.7;
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .seal {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, var(--seal), var(--seal-dark));
+      color: #fff1e6;
+      font-size: 17px;
+      font-weight: 700;
+      box-shadow: 0 14px 34px rgba(158, 63, 49, 0.22);
+    }
+
+    .brand-name {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.24em;
+      color: var(--bone-dim);
+    }
+
+    .menu {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid rgba(233, 219, 194, 0.1);
+      color: var(--bone);
+      font-size: 18px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .hero {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 18px;
+    }
+
+    .hero-mark {
+      width: 132px;
+      height: 132px;
+      border-radius: 50%;
+      position: relative;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(227, 182, 113, 0.18);
+      background:
+        radial-gradient(circle at center, rgba(227, 182, 113, 0.12), transparent 54%),
+        radial-gradient(circle at center, rgba(255,255,255,0.03), transparent 72%);
+      box-shadow:
+        inset 0 0 42px rgba(227, 182, 113, 0.06),
+        0 0 44px rgba(227, 182, 113, 0.08);
+    }
+
+    .hero-mark::before,
+    .hero-mark::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 50%;
+      border: 1px dashed rgba(231, 207, 175, 0.18);
+    }
+
+    .hero-mark::after {
+      inset: 28px;
+      border-style: solid;
+      opacity: 0.42;
+    }
+
+    .glyph {
+      color: var(--glyph);
+      font-size: 42px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      transform: translateX(3px);
+      text-shadow: 0 0 18px rgba(227, 182, 113, 0.1);
+    }
+
+    .overline {
+      color: var(--bone-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.28em;
+    }
+
+    .headline {
+      margin: 0;
+      max-width: 10ch;
+      font-family: "Bodoni MT", "Didot", "Times New Roman", serif;
+      font-size: 56px;
+      line-height: 0.9;
+      letter-spacing: -0.05em;
+      color: #f4e5ce;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 8px 28px rgba(0,0,0,0.24);
+    }
+
+    .subline {
+      max-width: 24ch;
+      color: var(--dust);
+      font-size: 15px;
+      line-height: 1.75;
+      margin: 0;
+    }
+
+    .stone {
+      position: relative;
+      z-index: 2;
+      margin: 36px auto 30px;
+      width: 100%;
+      min-height: 286px;
+      border-radius: 34px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 22%, rgba(227, 182, 113, 0.1), transparent 18%),
+        linear-gradient(145deg, #32231b 0%, #231711 36%, #17100d 100%);
+      border: 1px solid rgba(233, 219, 194, 0.08);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.02),
+        inset 0 0 50px rgba(255,255,255,0.015),
+        0 26px 60px rgba(0,0,0,0.26);
+    }
+
+    .stone::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 22% 18%, rgba(255,255,255,0.04), transparent 18%),
+        radial-gradient(circle at 78% 30%, rgba(255,255,255,0.03), transparent 22%),
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: auto, auto, 24px 24px, 24px 24px;
+      opacity: 0.48;
+    }
+
+    .stone::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 24px;
+      border: 1px solid rgba(231, 207, 175, 0.08);
+      pointer-events: none;
+    }
+
+    .sigils {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    .sigil-ring {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 1px solid rgba(231, 207, 175, 0.18);
+      box-shadow: inset 0 0 32px rgba(227, 182, 113, 0.06);
+    }
+
+    .sigil-ring::before,
+    .sigil-ring::after {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border-radius: 50%;
+      border: 1px dashed rgba(231, 207, 175, 0.16);
+    }
+
+    .sigil-ring::after {
+      inset: 46px;
+      border-style: solid;
+      opacity: 0.42;
+    }
+
+    .crosshair {
+      position: absolute;
+      inset: 50%;
+      width: 240px;
+      height: 240px;
+      transform: translate(-50%, -50%);
+    }
+
+    .crosshair::before,
+    .crosshair::after {
+      content: "";
+      position: absolute;
+      background: rgba(231, 207, 175, 0.16);
+    }
+
+    .crosshair::before {
+      left: 50%;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      transform: translateX(-50%);
+    }
+
+    .crosshair::after {
+      top: 50%;
+      left: 0;
+      height: 1px;
+      width: 100%;
+      transform: translateY(-50%);
+    }
+
+    .sigil-center {
+      position: absolute;
+      inset: 50%;
+      transform: translate(-50%, -50%);
+      width: 98px;
+      height: 98px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at center, rgba(158, 63, 49, 0.16), transparent 66%);
+      color: var(--glyph);
+      font-size: 34px;
+      letter-spacing: 0.18em;
+    }
+
+    .sigil-word {
+      position: absolute;
+      color: rgba(231, 207, 175, 0.74);
+      font-size: 12px;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+    }
+
+    .sigil-word.top { top: 24px; left: 50%; transform: translateX(-50%); }
+    .sigil-word.bottom { bottom: 24px; left: 50%; transform: translateX(-50%); }
+    .sigil-word.left { left: 18px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+    .sigil-word.right { right: 18px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+    .base {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .reading {
+      max-width: 20ch;
+      font-size: 18px;
+      line-height: 1.65;
+      color: var(--bone);
+      margin: 0;
+    }
+
+    .reading em {
+      font-style: normal;
+      color: var(--glyph);
+    }
+
+    .cta {
+      min-height: 54px;
+      padding: 0 22px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(180deg, rgba(158, 63, 49, 0.92), rgba(111, 38, 28, 0.98));
+      border: 1px solid rgba(255,255,255,0.05);
+      color: #fff4eb;
+      font-size: 14px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      box-shadow: 0 16px 34px rgba(158, 63, 49, 0.24);
+    }
+
+    .footnote {
+      color: var(--bone-dim);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.88;
+    }
+
+    @media (max-width: 520px) {
+      .phone {
+        min-height: 820px;
+        border-radius: 34px;
+        padding: 14px;
+      }
+
+      .screen {
+        padding: 30px 16px 20px;
+      }
+
+      .headline {
+        font-size: 48px;
+      }
+
+      .hero-mark {
+        width: 118px;
+        height: 118px;
+      }
+
+      .stone {
+        min-height: 264px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" aria-label="Lantern Sage Today Hero V4">
+    <section class="screen">
+      <header class="topbar">
+        <div class="brand">
+          <div class="seal">咫</div>
+          <div class="brand-name">Lantern Sage</div>
+        </div>
+        <div class="menu">《</div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-mark">
+          <div class="glyph">LS</div>
+        </div>
+        <div class="overline">today's almanac</div>
+        <h1 class="headline">Move only where the day opens.</h1>
+        <p class="subline">A quieter read for timing, approach, and one deliberate adjustment before noon.</p>
+      </section>
+
+      <section class="stone">
+        <div class="sigils">
+          <div class="sigil-ring"></div>
+          <div class="crosshair"></div>
+          <div class="sigil-center">耳</div>
+          <div class="sigil-word top">Lantern</div>
+          <div class="sigil-word bottom">Sage</div>
+          <div class="sigil-word left">Read</div>
+          <div class="sigil-word right">Today</div>
+        </div>
+      </section>
+
+      <section class="base">
+        <p class="reading">Best approached <em>slowly</em>, with less noise, fewer promises, and one visible reset before the first crossing.</p>
+        <div class="cta">Enter today's reading</div>
+        <div class="footnote">Shanghai ， Friday, Apr 10 ， GMT+8</div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
