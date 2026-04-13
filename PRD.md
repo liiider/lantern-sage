@@ -199,13 +199,45 @@ The Today page is the primary value surface and the daily habit anchor.
 - best time to go out
 - time to avoid
 - one practical suggestion
-- selected almanac base fields
+- fortune directions
 
 ### Product Role
 Today should feel like:
 - a daily folio
 - a living almanac page
 - a premium object with utility
+
+### Page Structure (Locked 2026-04-13)
+
+The Today page is organized into the following sections, top to bottom:
+
+#### 1. Hero Card (always visible)
+Contains three merged functions:
+- **Atmosphere**: daily thesis / title line
+- **Action**: one practical suggestion (replaces the old supporting copy)
+- **Space**: fortune directions integrated around the central seal (North/Wealth top, South/Blessing bottom, etc.)
+
+The central seal becomes a functional micro-compass, not just decoration.
+
+#### 2. Good for / Avoid (always visible, click-to-expand)
+- Default: two side-by-side panels showing lists
+- Click Good for → expands horizontally to the right, revealing advisory interpretation, Avoid panel is covered
+- Click Avoid → expands horizontally to the left, revealing advisory interpretation, Good for panel is covered
+- Click same side again → collapses back to default dual-panel view
+- The two panels are mutually exclusive when expanded
+
+#### 3. Timing Guidance (always visible)
+- Best time to go out
+- Time to avoid
+- Short note per time window
+
+#### 4. Ask Preview (always visible)
+- One-line micro-judgments for the four fixed Ask questions
+- Serves as a lightweight preview and conversion entry to the Ask page
+
+#### 5. Removed
+- Selected almanac base fields: deleted. Fortune directions moved to Hero; advisory content moved to Good/Avoid expand interpretation.
+- Practical suggestion as standalone module: merged into Hero card.
 
 ### Current Locked Topline for Current Static Design
 Current static Today reference keeps:
@@ -214,7 +246,7 @@ Current static Today reference keeps:
 
 ### Current Hero Copy Lock
 - title: `Move where the day opens.`
-- supporting copy: `Keep the pace lighter than instinct. Let order arrive before effort.`
+- supporting copy → replaced by practical suggestion: `Clear one visible surface near the entrance before noon.`
 
 ## 7.2 Ask
 ### Purpose
