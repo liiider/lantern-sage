@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lantern Sage - Today - Ritual Parchment Refined v8</title>
+  <style>
+    :root {
+      --bg: #1C0A00;
+      --panel-dark: #361500;
+      --panel-muted: #2A1305;
+      --panel-mid: #603601;
+      --panel-fold: #4A2800;
+      --accent: #CC9544;
+      --text-strong: rgba(204, 149, 68, 0.96);
+      --text-soft: rgba(204, 149, 68, 0.82);
+      --text-faint: rgba(204, 149, 68, 0.6);
+      --line-soft: rgba(204, 149, 68, 0.14);
+      --line-strong: rgba(204, 149, 68, 0.24);
+      --line-wear: rgba(204, 149, 68, 0.08);
+      --fiber: rgba(204, 149, 68, 0.07);
+      --shadow: none;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100dvh;
+      padding: 22px 16px 48px;
+      background: var(--bg);
+      color: var(--text-strong);
+      font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      position: relative;
+    }
+
+    /* Folio Texture on Body */
+    .folio-texture {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .texture-rule,
+    .texture-fiber,
+    .texture-dot {
+      position: absolute;
+      display: block;
+    }
+
+    .texture-rule {
+      height: 1px;
+      background: var(--line-wear);
+    }
+
+    .texture-rule.r1 { top: 12%; left: 8%; width: 30%; }
+    .texture-rule.r2 { top: 18%; right: 12%; width: 18%; }
+    .texture-rule.r3 { top: 45%; left: 6%; width: 16%; }
+    .texture-rule.r4 { top: 60%; right: 8%; width: 22%; }
+    .texture-rule.r5 { bottom: 25%; left: 10%; width: 26%; }
+    .texture-rule.r6 { bottom: 10%; right: 6%; width: 20%; }
+
+    .texture-fiber {
+      background: var(--fiber);
+      border-radius: 999px;
+    }
+
+    .texture-fiber.f1 { top: 15%; right: 15%; width: 10px; height: 1px; transform: rotate(12deg); }
+    .texture-fiber.f2 { top: 30%; left: 12%; width: 1px; height: 9px; transform: rotate(-8deg); }
+    .texture-fiber.f3 { top: 55%; right: 18%; width: 12px; height: 1px; transform: rotate(-16deg); }
+    .texture-fiber.f4 { bottom: 35%; left: 14%; width: 1px; height: 11px; transform: rotate(7deg); }
+    .texture-fiber.f5 { bottom: 20%; right: 20%; width: 14px; height: 1px; transform: rotate(14deg); }
+    .texture-fiber.f6 { bottom: 12%; left: 8%; width: 9px; height: 1px; transform: rotate(-12deg); }
+
+    .texture-dot {
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: rgba(204, 149, 68, 0.1);
+    }
+
+    .texture-dot.d1 { top: 22%; left: 20%; }
+    .texture-dot.d2 { top: 65%; right: 22%; }
+    .texture-dot.d3 { bottom: 30%; left: 26%; }
+    .texture-dot.d4 { bottom: 16%; right: 12%; }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(452px, 100%);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .masthead {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 2px 2px 0;
+    }
+
+    .masthead-mark {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 auto;
+      color: var(--text-soft);
+    }
+
+    .masthead-mark svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.92;
+      overflow: visible;
+    }
+
+    .masthead-date {
+      font-size: 16px;
+      line-height: 1.32;
+      letter-spacing: 0.01em;
+      color: var(--text-strong);
+    }
+
+    /* 1. Hero Card */
+    .hero-outline-frame {
+      display: grid;
+      justify-items: center;
+      gap: 16px;
+      width: 100%;
+      padding: 24px 18px 22px;
+      border: 1px solid rgba(204, 149, 68, 0.12);
+      border-radius: 8px;
+      box-shadow: inset 0 0 0 1px rgba(204, 149, 68, 0.06), inset 0 1px 0 rgba(204, 149, 68, 0.03);
+      position: relative;
+    }
+
+    .hero-outline-frame::before {
+      content: "";
+      position: absolute;
+      inset: 10px 12px;
+      border: 1px solid rgba(204, 149, 68, 0.06);
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    .compass-seal-container {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      display: grid;
+      place-items: center;
+    }
+
+    .compass-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .compass-ray-line {
+      stroke: rgba(204, 149, 68, 0.24);
+      stroke-width: 1;
+      stroke-linecap: round;
+    }
+
+    .compass-ray-label {
+      font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-size: 8.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      fill: rgba(204, 149, 68, 0.6);
+    }
+
+    .compass-ray-label.favorable {
+      fill: rgba(204, 149, 68, 0.82);
+    }
+
+    .compass-ray-label.caution {
+      fill: rgba(204, 149, 68, 0.48);
+    }
+
+    .seal-stage {
+      width: 88px;
+      height: 88px;
+      display: grid;
+      place-items: center;
+      transform: rotate(-2deg);
+      color: var(--text-strong);
+      position: relative;
+      z-index: 2;
+    }
+
+    .seal-stage svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .seal-body {
+      fill: var(--panel-dark);
+      stroke: rgba(204, 149, 68, 0.24);
+      stroke-width: 1.15;
+    }
+
+    .seal-edge,
+    .seal-glyph,
+    .seal-mark {
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .seal-edge {
+      stroke-width: 1.1;
+      opacity: 0.52;
+    }
+
+    .seal-glyph {
+      stroke-width: 1.65;
+      opacity: 0.96;
+    }
+
+    .seal-mark {
+      stroke-width: 1.05;
+      opacity: 0.54;
+    }
+
+    .hero-title-shell {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .hero-title {
+      margin: 0;
+      max-width: 7ch;
+      font-size: clamp(42px, 12vw, 56px);
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      text-wrap: balance;
+      color: var(--text-strong);
+    }
+
+    .title-guidance {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      color: var(--text-faint);
+    }
+
+    .guidance-rule {
+      width: 34px;
+      height: 1px;
+      background: var(--line-soft);
+    }
+
+    .guidance-mark {
+      width: 28px;
+      height: 14px;
+      color: var(--text-faint);
+    }
+
+    .guidance-mark svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.82;
+      overflow: visible;
+    }
+
+    .hero-copy {
+      margin: 0;
+      max-width: 26ch;
+      font-size: 15px;
+      line-height: 1.72;
+      color: var(--text-soft);
+      text-align: center;
+    }
+
+    /* 2. Good for / Avoid */
+    .judgment-band {
+      width: 100%;
+    }
+
+    .judgment-card {
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid rgba(204, 149, 68, 0.12);
+      box-shadow: inset 0 1px 0 rgba(204, 149, 68, 0.08);
+      min-height: 140px;
+    }
+
+    .judgment-part {
+      flex: 1;
+      width: 50%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 20px 16px;
+      cursor: pointer;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .good-part {
+      background: var(--panel-dark);
+      transform-origin: left;
+      border-right: 1px solid rgba(204, 149, 68, 0.08);
+    }
+
+    .avoid-part {
+      background: var(--panel-muted);
+      transform-origin: right;
+    }
+
+    .judgment-card.expanded-good .good-part {
+      width: 100%;
+      flex: 0 0 100%;
+      z-index: 2;
+      border-right: none;
+    }
+    .judgment-card.expanded-good .avoid-part {
+      width: 0%;
+      flex: 0 0 0%;
+      padding-left: 0;
+      padding-right: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .judgment-card.expanded-avoid .avoid-part {
+      width: 100%;
+      flex: 0 0 100%;
+      z-index: 2;
+    }
+    .judgment-card.expanded-avoid .good-part {
+      width: 0%;
+      flex: 0 0 0%;
+      padding-left: 0;
+      padding-right: 0;
+      opacity: 0;
+      overflow: hidden;
+      border-right: none;
+    }
+
+    .judgment-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text-strong);
+    }
+
+    .avoid-part .judgment-title {
+      color: rgba(204, 149, 68, 0.85);
+    }
+
+    .judgment-copy {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-soft);
+    }
+
+    .avoid-part .judgment-copy {
+      color: rgba(204, 149, 68, 0.7);
+    }
+
+    .judgment-advisory {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+      margin-top: auto;
+    }
+
+    .judgment-advisory-inner {
+      overflow: hidden;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-soft);
+      font-style: italic;
+      padding-top: 0;
+      border-top: 1px solid transparent;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .judgment-card.expanded-good .good-part .judgment-advisory,
+    .judgment-card.expanded-avoid .avoid-part .judgment-advisory {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+
+    .judgment-card.expanded-good .good-part .judgment-advisory-inner,
+    .judgment-card.expanded-avoid .avoid-part .judgment-advisory-inner {
+      padding-top: 14px;
+      margin-top: 8px;
+      border-top-color: var(--line-soft);
+    }
+
+    /* Separator */
+    .detail-separator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      color: var(--text-faint);
+      opacity: 0.6;
+    }
+
+    .detail-rule {
+      width: 48px;
+      height: 1px;
+      background: var(--line-soft);
+    }
+
+    .detail-mark {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+    }
+
+    .detail-mark svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .detail-mark-outline,
+    .detail-mark-glyph {
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .detail-mark-outline {
+      stroke-width: 1.05;
+      opacity: 0.5;
+    }
+
+    .detail-mark-glyph {
+      stroke-width: 1.2;
+      opacity: 0.82;
+    }
+
+    /* 3. Timing Guidance */
+    .timing-stack {
+      display: grid;
+      gap: 20px;
+      padding: 0 8px;
+    }
+
+    .timing-line {
+      display: grid;
+      gap: 6px;
+      padding-left: 14px;
+      border-left: 1px solid var(--line-strong);
+    }
+
+    .section-kicker {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      font-size: 10px;
+      line-height: 1.5;
+      color: var(--text-faint);
+    }
+
+    .timing-value {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text-strong);
+    }
+
+    .timing-note {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-soft);
+      max-width: 32ch;
+    }
+
+    /* 4. Ask Preview */
+    .ask-preview {
+      padding: 0 8px;
+    }
+
+    .ask-preview-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 0;
+    }
+
+    .ask-preview-item {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line-soft);
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .ask-preview-item:first-child {
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .ask-question {
+      font-size: 15px;
+      color: var(--text-soft);
+      line-height: 1.4;
+      padding-right: 8px;
+    }
+
+    .ask-answer {
+      font-size: 14px;
+      color: var(--text-strong);
+      text-align: right;
+      font-style: italic;
+    }
+
+    .ask-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--text-faint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .ask-arrow svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .ask-preview-item:hover .ask-arrow {
+      transform: translateX(2px);
+      color: var(--text-strong);
+    }
+
+    @media (min-width: 720px) {
+      body {
+        padding-top: 32px;
+        padding-bottom: 64px;
+      }
+
+      .page {
+        width: min(560px, 100%);
+        gap: 40px;
+      }
+
+      .masthead-date {
+        font-size: 17px;
+      }
+
+      .hero-outline-frame {
+        padding: 32px 24px 28px;
+      }
+
+      .compass-seal-container {
+        width: 220px;
+        height: 220px;
+      }
+
+      .seal-stage {
+        width: 100px;
+        height: 100px;
+      }
+
+      .hero-title {
+        font-size: 64px;
+      }
+
+      .guidance-rule {
+        width: 48px;
+      }
+
+      .judgment-part {
+        padding: 24px 20px;
+      }
+
+      .detail-separator {
+        margin: 8px 0;
+      }
+
+      .timing-stack {
+        padding: 0 16px;
+      }
+
+      .ask-preview {
+        padding: 0 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="folio-texture" aria-hidden="true">
+    <span class="texture-rule r1"></span>
+    <span class="texture-rule r2"></span>
+    <span class="texture-rule r3"></span>
+    <span class="texture-rule r4"></span>
+    <span class="texture-rule r5"></span>
+    <span class="texture-rule r6"></span>
+    <span class="texture-fiber f1"></span>
+    <span class="texture-fiber f2"></span>
+    <span class="texture-fiber f3"></span>
+    <span class="texture-fiber f4"></span>
+    <span class="texture-fiber f5"></span>
+    <span class="texture-fiber f6"></span>
+    <span class="texture-dot d1"></span>
+    <span class="texture-dot d2"></span>
+    <span class="texture-dot d3"></span>
+    <span class="texture-dot d4"></span>
+  </div>
+
+  <main class="page" aria-label="Lantern Sage Today page ritual parchment refined exploration version 8">
+    <header class="masthead">
+      <div class="masthead-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M6.8 3.8C9 3.1 14 3.4 16.6 4.9C18.5 6 19.3 8.1 19 10.2C19.8 12.1 19.3 15.3 17.4 17C15.8 18.5 13.2 18.9 10.9 18.5C8.7 19.2 6.2 18.2 4.9 16.3C3.8 14.6 3.9 12 4.6 10.2C4.3 7.9 5 5.4 6.8 3.8Z"></path>
+          <path d="M11.9 6.3v7.1"></path>
+          <path d="M8.8 8.9c.8-1 1.8-1.5 3-1.5 1 0 2 .5 3.1 1.5"></path>
+          <path d="M9.1 11.2h5.6"></path>
+          <path d="M9.7 14.5c.7.5 1.4.8 2.2.8.7 0 1.5-.3 2.2-.8"></path>
+        </svg>
+      </div>
+      <div class="masthead-date" aria-label="Current Gregorian date">April 13, 2026 - Monday</div>
+    </header>
+
+    <!-- 1. Hero Card -->
+    <section class="hero-outline-frame" aria-label="Daily heading">
+      <div class="compass-seal-container" aria-hidden="true">
+        <!-- Compass rays SVG: 8 rays radiating from seal center -->
+        <svg class="compass-svg" viewBox="0 0 220 220">
+          <line class="compass-ray-line" x1="110" y1="62" x2="110" y2="14"/>
+          <text class="compass-ray-label favorable" x="110" y="9" text-anchor="middle">Wealth</text>
+          <line class="compass-ray-line" x1="142" y1="78" x2="176" y2="44"/>
+          <text class="compass-ray-label favorable" x="184" y="40" text-anchor="start">Joy</text>
+          <line class="compass-ray-line" x1="158" y1="110" x2="206" y2="110"/>
+          <text class="compass-ray-label" x="212" y="113" text-anchor="start">Steady</text>
+          <line class="compass-ray-line" x1="142" y1="142" x2="176" y2="176"/>
+          <text class="compass-ray-label" x="184" y="184" text-anchor="start">Quiet</text>
+          <line class="compass-ray-line" x1="110" y1="158" x2="110" y2="206"/>
+          <text class="compass-ray-label favorable" x="110" y="218" text-anchor="middle">Blessing</text>
+          <line class="compass-ray-line" x1="78" y1="142" x2="44" y2="176"/>
+          <text class="compass-ray-label" x="36" y="184" text-anchor="end">Rest</text>
+          <line class="compass-ray-line" x1="62" y1="110" x2="14" y2="110"/>
+          <text class="compass-ray-label caution" x="8" y="113" text-anchor="end">Caution</text>
+          <line class="compass-ray-line" x1="78" y1="78" x2="44" y2="44"/>
+          <text class="compass-ray-label" x="36" y="40" text-anchor="end">Calm</text>
+        </svg>
+        
+        <div class="seal-stage">
+          <svg viewBox="0 0 128 128" aria-label="Day seal">
+            <path class="seal-body" d="M31 13C45 9 78 10 95 18C108 24 114 37 112 53C118 68 116 89 104 101C91 114 70 117 53 114C39 118 24 110 18 95C11 83 11 65 16 50C15 35 19 21 31 13Z"></path>
+            <path class="seal-edge" d="M35 21C48 17 75 17 90 24C100 29 105 40 103 52C108 64 106 82 97 92C87 102 70 105 57 103C45 106 31 100 25 89C20 79 20 65 24 53C24 41 26 28 35 21Z"></path>
+            <path class="seal-mark" d="M27 27l8-4"></path>
+            <path class="seal-mark" d="M96 26l7 5"></path>
+            <path class="seal-mark" d="M24 86l7 6"></path>
+            <path class="seal-mark" d="M94 101l8-4"></path>
+            <path class="seal-glyph" d="M62 33v44"></path>
+            <path class="seal-glyph" d="M46 48c4-8 10-12 18-12 6 0 12 3 18 10"></path>
+            <path class="seal-glyph" d="M45 63c7-1 14-1 22-1 5 0 10 0 16 1"></path>
+            <path class="seal-glyph" d="M50 79c4 5 9 8 15 8 7 0 13-3 18-9"></path>
+            <path class="seal-glyph" d="M55 94h22"></path>
+          </svg>
+        </div>
+      </div>
+
+      <div class="hero-title-shell">
+        <h1 class="hero-title">Move where the day opens.</h1>
+        <div class="title-guidance" aria-hidden="true">
+          <span class="guidance-rule"></span>
+          <span class="guidance-mark">
+            <svg viewBox="0 0 28 14">
+              <path d="M4 7.1c1.7-2 3.5-3 5.6-3 1.8 0 3.6.8 5.5 2.4"></path>
+              <path d="M13.7 2.6v8.4"></path>
+              <path d="M18.6 6.8h5.8"></path>
+            </svg>
+          </span>
+          <span class="guidance-rule"></span>
+        </div>
+        <p class="hero-copy">Clear one visible surface near the entrance before noon.</p>
+      </div>
+    </section>
+
+    <!-- 2. Good for / Avoid -->
+    <section class="judgment-band" aria-label="Good for and avoid reading">
+      <div class="judgment-card" id="judgment-container">
+        <div class="judgment-part good-part" onclick="toggleJudgment('good')" role="button" tabindex="0" aria-expanded="false">
+          <h2 class="judgment-title">Good for</h2>
+          <p class="judgment-copy">Prayer. Travel. Small repairs. Study. Meeting. Quiet settling.</p>
+          <div class="judgment-advisory">
+            <div class="judgment-advisory-inner">
+              Morning hours favor new starts. Agreements settle more easily before noon.
+            </div>
+          </div>
+        </div>
+
+        <div class="judgment-part avoid-part" onclick="toggleJudgment('avoid')" role="button" tabindex="0" aria-expanded="false">
+          <h2 class="judgment-title">Avoid</h2>
+          <p class="judgment-copy">Opening trade. Breaking ground. Moving house. Burial matters. Late disputes.</p>
+          <div class="judgment-advisory">
+            <div class="judgment-advisory-inner">
+              Avoid signing commitments after evening. Haste in vows may lead to reconsideration.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Separator -->
+    <div class="detail-separator" aria-hidden="true">
+      <span class="detail-rule"></span>
+      <span class="detail-mark">
+        <svg viewBox="0 0 24 24">
+          <path class="detail-mark-outline" d="M6.7 3.9C8.9 3.2 14 3.4 16.5 4.9C18.4 6 19.2 8.1 18.9 10.2C19.8 12.1 19.2 15.3 17.4 17C15.8 18.5 13.2 18.9 10.9 18.5C8.7 19.2 6.2 18.2 4.9 16.3C3.8 14.6 3.9 12 4.6 10.2C4.3 8 4.9 5.5 6.7 3.9Z"></path>
+          <path class="detail-mark-glyph" d="M12 7.5v8.8"></path>
+          <path class="detail-mark-glyph" d="M8.8 11.9h6.4"></path>
+        </svg>
+      </span>
+      <span class="detail-rule"></span>
+    </div>
+
+    <!-- 3. Timing Guidance -->
+    <section class="timing-stack" aria-label="Timing guidance">
+      <div class="timing-line">
+        <p class="section-kicker">Best time to go out</p>
+        <p class="timing-value">8:30 AM - 10:30 AM</p>
+        <p class="timing-note">Go in the morning while the day is still open and easy to steer.</p>
+      </div>
+
+      <div class="timing-line">
+        <p class="section-kicker">Time to avoid</p>
+        <p class="timing-value">6:30 PM - 8:30 PM</p>
+        <p class="timing-note">By evening the current thickens, and simple errands ask for more patience.</p>
+      </div>
+    </section>
+
+    <!-- Separator -->
+    <div class="detail-separator" aria-hidden="true">
+      <span class="detail-rule"></span>
+      <span class="detail-mark">
+        <svg viewBox="0 0 24 24">
+          <path class="detail-mark-outline" d="M6.7 3.9C8.9 3.2 14 3.4 16.5 4.9C18.4 6 19.2 8.1 18.9 10.2C19.8 12.1 19.2 15.3 17.4 17C15.8 18.5 13.2 18.9 10.9 18.5C8.7 19.2 6.2 18.2 4.9 16.3C3.8 14.6 3.9 12 4.6 10.2C4.3 8 4.9 5.5 6.7 3.9Z"></path>
+          <path class="detail-mark-glyph" d="M12 7.5v8.8"></path>
+          <path class="detail-mark-glyph" d="M8.8 11.9h6.4"></path>
+        </svg>
+      </span>
+      <span class="detail-rule"></span>
+    </div>
+
+    <!-- 4. Ask Preview -->
+    <section class="ask-preview" aria-label="Ask preview">
+      <ul class="ask-preview-list">
+        <li class="ask-preview-item" role="button" tabindex="0">
+          <span class="ask-question">Is this a good time to go out?</span>
+          <span class="ask-answer">Favorable morning</span>
+          <span class="ask-arrow" aria-hidden="true">
+            <svg viewBox="0 0 16 16"><path d="M4 8h8m-4-4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </li>
+        <li class="ask-preview-item" role="button" tabindex="0">
+          <span class="ask-question">Is this a good time to meet someone?</span>
+          <span class="ask-answer">Neutral</span>
+          <span class="ask-arrow" aria-hidden="true">
+            <svg viewBox="0 0 16 16"><path d="M4 8h8m-4-4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </li>
+        <li class="ask-preview-item" role="button" tabindex="0">
+          <span class="ask-question">Is this a good time to discuss important matters?</span>
+          <span class="ask-answer">Wait until afternoon</span>
+          <span class="ask-arrow" aria-hidden="true">
+            <svg viewBox="0 0 16 16"><path d="M4 8h8m-4-4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </li>
+        <li class="ask-preview-item" role="button" tabindex="0">
+          <span class="ask-question">What should I adjust first at home today?</span>
+          <span class="ask-answer">Clear the entrance</span>
+          <span class="ask-arrow" aria-hidden="true">
+            <svg viewBox="0 0 16 16"><path d="M4 8h8m-4-4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    function toggleJudgment(type) {
+      const container = document.getElementById('judgment-container');
+      const goodPart = container.querySelector('.good-part');
+      const avoidPart = container.querySelector('.avoid-part');
+      
+      if (type === 'good') {
+        if (container.classList.contains('expanded-good')) {
+          container.classList.remove('expanded-good');
+          goodPart.setAttribute('aria-expanded', 'false');
+        } else {
+          container.classList.remove('expanded-avoid');
+          container.classList.add('expanded-good');
+          goodPart.setAttribute('aria-expanded', 'true');
+          avoidPart.setAttribute('aria-expanded', 'false');
+        }
+      } else if (type === 'avoid') {
+        if (container.classList.contains('expanded-avoid')) {
+          container.classList.remove('expanded-avoid');
+          avoidPart.setAttribute('aria-expanded', 'false');
+        } else {
+          container.classList.remove('expanded-good');
+          container.classList.add('expanded-avoid');
+          avoidPart.setAttribute('aria-expanded', 'true');
+          goodPart.setAttribute('aria-expanded', 'false');
+        }
+      }
+    }
+  </script>
+</body>
+</html>
