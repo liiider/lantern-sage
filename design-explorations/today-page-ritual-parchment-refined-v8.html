@@ -13,13 +13,12 @@
       --panel-fold: #4A2800;
       --accent: #CC9544;
       --text-strong: rgba(204, 149, 68, 0.96);
-      --text-soft: rgba(204, 149, 68, 0.82);
-      --text-faint: rgba(204, 149, 68, 0.6);
+      --text-soft: rgba(204, 149, 68, 0.8);
+      --text-faint: rgba(204, 149, 68, 0.55);
       --line-soft: rgba(204, 149, 68, 0.14);
       --line-strong: rgba(204, 149, 68, 0.24);
       --line-wear: rgba(204, 149, 68, 0.08);
       --fiber: rgba(204, 149, 68, 0.07);
-      --shadow: none;
     }
 
     * {
@@ -34,10 +33,10 @@
 
     body {
       min-height: 100dvh;
-      padding: 22px 16px 48px;
+      padding: 24px 16px 48px;
       background: var(--bg);
       color: var(--text-strong);
-      font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Noto Serif SC", "Source Han Serif SC", serif;
       position: relative;
     }
 
@@ -100,14 +99,14 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 32px;
+      gap: 24px;
     }
 
     .masthead {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 2px 2px 0;
+      padding: 0;
     }
 
     .masthead-mark {
@@ -303,127 +302,104 @@
       text-align: center;
     }
 
-    /* 2. Good for / Avoid */
+    /* 2. Good for / Avoid - Inline List Design */
     .judgment-band {
       width: 100%;
+      display: grid;
+      gap: 16px;
     }
 
-    .judgment-card {
+    .judgment-row {
       display: flex;
-      position: relative;
-      overflow: hidden;
-      border-radius: 8px;
-      border: 1px solid rgba(204, 149, 68, 0.12);
-      box-shadow: inset 0 1px 0 rgba(204, 149, 68, 0.08);
-      min-height: 140px;
+      align-items: baseline;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line-soft);
     }
 
-    .judgment-part {
-      flex: 1;
-      width: 50%;
-      position: relative;
+    .judgment-row:first-child {
+      padding-top: 0;
+    }
+
+    .judgment-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .judgment-label {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 20px 16px;
-      cursor: pointer;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      min-width: 90px;
     }
 
-    .good-part {
-      background: var(--panel-dark);
-      transform-origin: left;
-      border-right: 1px solid rgba(204, 149, 68, 0.08);
+    .judgment-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
     }
 
-    .avoid-part {
-      background: var(--panel-muted);
-      transform-origin: right;
-    }
-
-    .judgment-card.expanded-good .good-part {
+    .judgment-icon svg {
       width: 100%;
-      flex: 0 0 100%;
-      z-index: 2;
-      border-right: none;
-    }
-    .judgment-card.expanded-good .avoid-part {
-      width: 0%;
-      flex: 0 0 0%;
-      padding-left: 0;
-      padding-right: 0;
-      opacity: 0;
-      overflow: hidden;
+      height: 100%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
-    .judgment-card.expanded-avoid .avoid-part {
-      width: 100%;
-      flex: 0 0 100%;
-      z-index: 2;
+    .good-row .judgment-icon {
+      color: rgba(204, 149, 68, 0.75);
     }
-    .judgment-card.expanded-avoid .good-part {
-      width: 0%;
-      flex: 0 0 0%;
-      padding-left: 0;
-      padding-right: 0;
-      opacity: 0;
-      overflow: hidden;
-      border-right: none;
+
+    .avoid-row .judgment-icon {
+      color: rgba(204, 149, 68, 0.45);
     }
 
     .judgment-title {
       margin: 0;
-      font-size: 22px;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      color: var(--text-strong);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      font-weight: normal;
     }
 
-    .avoid-part .judgment-title {
-      color: rgba(204, 149, 68, 0.85);
+    .judgment-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      flex: 1;
     }
 
-    .judgment-copy {
-      margin: 0;
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--text-soft);
-    }
-
-    .avoid-part .judgment-copy {
-      color: rgba(204, 149, 68, 0.7);
-    }
-
-    .judgment-advisory {
-      display: grid;
-      grid-template-rows: 0fr;
-      transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      opacity: 0;
-      margin-top: auto;
-    }
-
-    .judgment-advisory-inner {
-      overflow: hidden;
+    .judgment-item {
       font-size: 14px;
-      line-height: 1.6;
+      line-height: 1.4;
       color: var(--text-soft);
-      font-style: italic;
-      padding-top: 0;
-      border-top: 1px solid transparent;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
     }
 
-    .judgment-card.expanded-good .good-part .judgment-advisory,
-    .judgment-card.expanded-avoid .avoid-part .judgment-advisory {
-      grid-template-rows: 1fr;
-      opacity: 1;
+    .judgment-item:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 3px;
+      background: rgba(204, 149, 68, 0.3);
+      border-radius: 50%;
     }
 
-    .judgment-card.expanded-good .good-part .judgment-advisory-inner,
-    .judgment-card.expanded-avoid .avoid-part .judgment-advisory-inner {
-      padding-top: 14px;
-      margin-top: 8px;
-      border-top-color: var(--line-soft);
+    .good-row .judgment-item {
+      color: rgba(204, 149, 68, 0.9);
+    }
+
+    .avoid-row .judgment-item {
+      color: rgba(204, 149, 68, 0.75);
     }
 
     /* Separator */
@@ -472,43 +448,129 @@
       opacity: 0.82;
     }
 
-    /* 3. Timing Guidance */
+    /* 3. Timing Guidance - Timeline Design */
     .timing-stack {
       display: grid;
-      gap: 20px;
-      padding: 0 8px;
+      gap: 0;
+      padding: 0;
+      position: relative;
     }
 
-    .timing-line {
+    .timing-stack::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 24px;
+      bottom: 24px;
+      width: 1px;
+      background: linear-gradient(180deg, rgba(204, 149, 68, 0.3) 0%, rgba(204, 149, 68, 0.1) 100%);
+    }
+
+    .timing-card {
       display: grid;
-      gap: 6px;
-      padding-left: 14px;
-      border-left: 1px solid var(--line-strong);
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      padding: 16px 0 16px 20px;
+      position: relative;
+    }
+
+    .timing-card:first-child {
+      padding-top: 0;
+    }
+
+    .timing-card:last-child {
+      padding-bottom: 0;
+    }
+
+    .timing-indicator {
+      position: absolute;
+      left: 0;
+      top: 22px;
+      width: 14px;
+      height: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+    }
+
+    .timing-card:first-child .timing-indicator {
+      top: 2px;
+    }
+
+    .indicator-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid;
+    }
+
+    .timing-card.favorable .indicator-dot {
+      border-color: rgba(204, 149, 68, 0.7);
+      background: rgba(204, 149, 68, 0.15);
+    }
+
+    .timing-card.unfavorable .indicator-dot {
+      border-color: rgba(204, 149, 68, 0.35);
+      background: rgba(204, 149, 68, 0.05);
+    }
+
+    .timing-content {
+      display: grid;
+      gap: 8px;
+    }
+
+    .timing-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .section-kicker {
       margin: 0;
       text-transform: uppercase;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.18em;
       font-size: 10px;
-      line-height: 1.5;
+      line-height: 1;
       color: var(--text-faint);
+    }
+
+    .timing-badge {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      line-height: 1;
+    }
+
+    .timing-card.favorable .timing-badge {
+      background: rgba(204, 149, 68, 0.12);
+      color: rgba(204, 149, 68, 0.85);
+      border: 1px solid rgba(204, 149, 68, 0.2);
+    }
+
+    .timing-card.unfavorable .timing-badge {
+      background: rgba(204, 149, 68, 0.06);
+      color: rgba(204, 149, 68, 0.55);
+      border: 1px solid rgba(204, 149, 68, 0.12);
     }
 
     .timing-value {
       margin: 0;
-      font-size: 28px;
-      line-height: 1.1;
+      font-size: 32px;
+      line-height: 1;
       letter-spacing: -0.02em;
       color: var(--text-strong);
+      font-weight: 400;
     }
 
     .timing-note {
       margin: 0;
-      font-size: 15px;
-      line-height: 1.6;
+      font-size: 14px;
+      line-height: 1.5;
       color: var(--text-soft);
-      max-width: 32ch;
+      max-width: 34ch;
     }
 
     /* 4. Ask Preview */
@@ -535,10 +597,6 @@
       transition: background-color 0.2s ease;
     }
 
-    .ask-preview-item:first-child {
-      border-top: 1px solid var(--line-soft);
-    }
-
     .ask-question {
       font-size: 15px;
       color: var(--text-soft);
@@ -549,7 +607,7 @@
     .ask-answer {
       font-size: 14px;
       color: var(--text-strong);
-      text-align: right;
+      text-align: left;
       font-style: italic;
     }
 
@@ -571,6 +629,17 @@
     .ask-preview-item:hover .ask-arrow {
       transform: translateX(2px);
       color: var(--text-strong);
+    }
+
+    .ask-preview-item:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      background: rgba(204, 149, 68, 0.05);
+    }
+
+    .ask-preview-item:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
     }
 
     @media (min-width: 720px) {
@@ -610,8 +679,14 @@
         width: 48px;
       }
 
-      .judgment-part {
-        padding: 24px 20px;
+      .judgment-icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      .judgment-title {
+        font-size: 13px;
+        letter-spacing: 0.12em;
       }
 
       .detail-separator {
@@ -626,26 +701,23 @@
         padding: 0 16px;
       }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ask-preview-item,
+      .ask-arrow {
+        transition: none;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="folio-texture" aria-hidden="true">
     <span class="texture-rule r1"></span>
-    <span class="texture-rule r2"></span>
     <span class="texture-rule r3"></span>
-    <span class="texture-rule r4"></span>
     <span class="texture-rule r5"></span>
-    <span class="texture-rule r6"></span>
-    <span class="texture-fiber f1"></span>
     <span class="texture-fiber f2"></span>
-    <span class="texture-fiber f3"></span>
     <span class="texture-fiber f4"></span>
-    <span class="texture-fiber f5"></span>
     <span class="texture-fiber f6"></span>
-    <span class="texture-dot d1"></span>
-    <span class="texture-dot d2"></span>
-    <span class="texture-dot d3"></span>
-    <span class="texture-dot d4"></span>
   </div>
 
   <main class="page" aria-label="Lantern Sage Today page ritual parchment refined exploration version 8">
@@ -721,25 +793,42 @@
 
     <!-- 2. Good for / Avoid -->
     <section class="judgment-band" aria-label="Good for and avoid reading">
-      <div class="judgment-card" id="judgment-container">
-        <div class="judgment-part good-part" onclick="toggleJudgment('good')" role="button" tabindex="0" aria-expanded="false">
+      <div class="judgment-row good-row">
+        <div class="judgment-label">
+          <span class="judgment-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20">
+              <circle cx="10" cy="10" r="7" stroke-dasharray="1.5 2"/>
+              <path d="M7 10.5l2 2 4-5"/>
+            </svg>
+          </span>
           <h2 class="judgment-title">Good for</h2>
-          <p class="judgment-copy">Prayer. Travel. Small repairs. Study. Meeting. Quiet settling.</p>
-          <div class="judgment-advisory">
-            <div class="judgment-advisory-inner">
-              Morning hours favor new starts. Agreements settle more easily before noon.
-            </div>
-          </div>
         </div>
+        <div class="judgment-items">
+          <span class="judgment-item">Prayer</span>
+          <span class="judgment-item">Travel</span>
+          <span class="judgment-item">Small repairs</span>
+          <span class="judgment-item">Study</span>
+          <span class="judgment-item">Meeting</span>
+          <span class="judgment-item">Quiet settling</span>
+        </div>
+      </div>
 
-        <div class="judgment-part avoid-part" onclick="toggleJudgment('avoid')" role="button" tabindex="0" aria-expanded="false">
+      <div class="judgment-row avoid-row">
+        <div class="judgment-label">
+          <span class="judgment-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20">
+              <circle cx="10" cy="10" r="7" stroke-dasharray="1.5 2"/>
+              <path d="M7 7l6 6M13 7l-6 6"/>
+            </svg>
+          </span>
           <h2 class="judgment-title">Avoid</h2>
-          <p class="judgment-copy">Opening trade. Breaking ground. Moving house. Burial matters. Late disputes.</p>
-          <div class="judgment-advisory">
-            <div class="judgment-advisory-inner">
-              Avoid signing commitments after evening. Haste in vows may lead to reconsideration.
-            </div>
-          </div>
+        </div>
+        <div class="judgment-items">
+          <span class="judgment-item">Opening trade</span>
+          <span class="judgment-item">Breaking ground</span>
+          <span class="judgment-item">Moving house</span>
+          <span class="judgment-item">Burial matters</span>
+          <span class="judgment-item">Late disputes</span>
         </div>
       </div>
     </section>
@@ -759,16 +848,32 @@
 
     <!-- 3. Timing Guidance -->
     <section class="timing-stack" aria-label="Timing guidance">
-      <div class="timing-line">
-        <p class="section-kicker">Best time to go out</p>
-        <p class="timing-value">8:30 AM - 10:30 AM</p>
-        <p class="timing-note">Go in the morning while the day is still open and easy to steer.</p>
+      <div class="timing-card favorable">
+        <div class="timing-indicator">
+          <div class="indicator-dot"></div>
+        </div>
+        <div class="timing-content">
+          <div class="timing-header">
+            <p class="section-kicker">Best time to go out</p>
+            <span class="timing-badge">Favorable</span>
+          </div>
+          <p class="timing-value">8:30 AM - 10:30 AM</p>
+          <p class="timing-note">Go in the morning while the day is still open and easy to steer.</p>
+        </div>
       </div>
 
-      <div class="timing-line">
-        <p class="section-kicker">Time to avoid</p>
-        <p class="timing-value">6:30 PM - 8:30 PM</p>
-        <p class="timing-note">By evening the current thickens, and simple errands ask for more patience.</p>
+      <div class="timing-card unfavorable">
+        <div class="timing-indicator">
+          <div class="indicator-dot"></div>
+        </div>
+        <div class="timing-content">
+          <div class="timing-header">
+            <p class="section-kicker">Time to avoid</p>
+            <span class="timing-badge">Caution</span>
+          </div>
+          <p class="timing-value">6:30 PM - 8:30 PM</p>
+          <p class="timing-note">By evening the current thickens, and simple errands ask for more patience.</p>
+        </div>
       </div>
     </section>
 
@@ -821,33 +926,7 @@
   </main>
 
   <script>
-    function toggleJudgment(type) {
-      const container = document.getElementById('judgment-container');
-      const goodPart = container.querySelector('.good-part');
-      const avoidPart = container.querySelector('.avoid-part');
-      
-      if (type === 'good') {
-        if (container.classList.contains('expanded-good')) {
-          container.classList.remove('expanded-good');
-          goodPart.setAttribute('aria-expanded', 'false');
-        } else {
-          container.classList.remove('expanded-avoid');
-          container.classList.add('expanded-good');
-          goodPart.setAttribute('aria-expanded', 'true');
-          avoidPart.setAttribute('aria-expanded', 'false');
-        }
-      } else if (type === 'avoid') {
-        if (container.classList.contains('expanded-avoid')) {
-          container.classList.remove('expanded-avoid');
-          avoidPart.setAttribute('aria-expanded', 'false');
-        } else {
-          container.classList.remove('expanded-good');
-          container.classList.add('expanded-avoid');
-          avoidPart.setAttribute('aria-expanded', 'true');
-          goodPart.setAttribute('aria-expanded', 'false');
-        }
-      }
-    }
+    // Static display - no interactions needed for Good for / Avoid section
   </script>
 </body>
 </html>
