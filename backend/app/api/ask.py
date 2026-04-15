@@ -9,6 +9,15 @@ from app.services import ask_service
 router = APIRouter(prefix="/ask", tags=["ask"])
 
 
+@router.get("/questions", response_model=schemas.QuestionTypesResponse)
+async def list_questions():
+    items = [
+        schemas.QuestionTypeItem(type=k, text=v)
+        for k, v in schemas.QUESTION_TYPES.items()
+    ]
+    return schemas.QuestionTypesResponse(questions=items)
+
+
 @router.post("", response_model=schemas.AskResponse)
 async def ask(
     req: schemas.AskRequest,

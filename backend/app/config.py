@@ -5,9 +5,9 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/lantern_sage"
     redis_url: str = "redis://localhost:6379/0"
 
-    deepseek_api_key: str = ""
-    deepseek_base_url: str = "https://api.deepseek.com"
-    deepseek_model: str = "deepseek-chat"
+    zhipu_api_key: str = ""
+    zhipu_base_url: str = "https://open.bigmodel.cn/api/paas/v4/"
+    zhipu_model: str = "glm-4-flash"
 
     daily_read_cache_ttl: int = 86400
     free_daily_ask_limit: int = 2

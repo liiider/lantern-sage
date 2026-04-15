@@ -20,7 +20,7 @@ async def register(
     if existing:
         return existing
 
-    user = models.User(device_id=req.device_id)
+    user = models.User(device_id=req.device_id, city=req.city, timezone=req.timezone)
     session.add(user)
     await session.flush()
     await session.commit()

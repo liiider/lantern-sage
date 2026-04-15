@@ -15,6 +15,8 @@ QUESTION_TYPES = {
 
 class UserCreate(BaseModel):
     device_id: str
+    city: str = "Shanghai"
+    timezone: str = "Asia/Shanghai"
 
 
 class UserOut(BaseModel):
@@ -77,6 +79,11 @@ class DayFactsResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class TodayRequest(BaseModel):
+    user_id: uuid.UUID
+    current_date: date
+
+
 class DayReadRequest(BaseModel):
     user_id: uuid.UUID
     current_date: date
@@ -98,6 +105,25 @@ class DayReadResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class TodayResponse(BaseModel):
+    lunar_date: str
+    solar_term: str
+    day_ganzhi: str
+    year_ganzhi: str
+    zodiac: str
+    level_name: str
+    today_message: str
+    practical_tip: str
+    good_for: list[str]
+    avoid: list[str]
+    best_outgoing_time: str
+    avoid_time: str
+    hourly_reads: list[HourBlock]
+    compass_directions: list[CompassDirection]
+    ask_questions: list[dict]
+    feedback_submitted: bool
+
+
 class AskRequest(BaseModel):
     user_id: uuid.UUID
     question_type: int = Field(ge=0, le=3)
@@ -117,6 +143,21 @@ class AskResponse(BaseModel):
 class AskUsageResponse(BaseModel):
     used: int
     limit: int
+
+
+class QuestionTypeItem(BaseModel):
+    type: int
+    text: str
+
+
+class QuestionTypesResponse(BaseModel):
+    questions: list[QuestionTypeItem]
+
+
+class FeedbackStatusResponse(BaseModel):
+    date: date
+    submitted: bool
+    rating: str | None = None
 
 
 class FeedbackRequest(BaseModel):
