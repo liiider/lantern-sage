@@ -10,8 +10,11 @@ class Settings(BaseSettings):
     zhipu_model: str = "glm-4-flash"
 
     daily_read_cache_ttl: int = 86400
+    mvp_unrestricted: bool = True
     free_daily_ask_limit: int = 2
+    mvp_daily_ask_limit: int = 999
     free_history_days: int = 7
+    mvp_history_days: int = 30
     plus_history_days: int = 30
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}

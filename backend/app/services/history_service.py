@@ -11,7 +11,10 @@ from app.config import settings
 
 
 async def get_history(session: AsyncSession, user_id, tier: str = "free") -> schemas.HistoryResponse:
-    days = settings.plus_history_days if tier == "plus" else settings.free_history_days
+    if settings.mvp_unrestricted:
+        days = settings.mvp_history_days
+    else:
+        days = settings.plus_history_days if tier == "plus" else settings.free_history_days
     start_date = date.today() - timedelta(days=days - 1)
 
     reads_stmt = (

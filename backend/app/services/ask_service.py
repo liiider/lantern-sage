@@ -25,7 +25,7 @@ async def get_usage(session: AsyncSession, user_id, target_date: date) -> schema
     used = result.scalar() or 0
 
     user = await session.get(models.User, user_id)
-    limit = settings.free_daily_ask_limit
+    limit = settings.mvp_daily_ask_limit if settings.mvp_unrestricted else settings.free_daily_ask_limit
     if user and user.tier == "plus":
         limit = 10
 
@@ -36,13 +36,13 @@ async def ask_question(
     session: AsyncSession, user_id, question_type: int, target_date: date, llm: LLMProvider
 ) -> schemas.AskResponse:
     usage = await get_usage(session, user_id, target_date)
-    if usage.used >= usage.limit:
+    if not settings.mvp_unrestricted and usage.used >= usage.limit:
         return schemas.AskResponse(
             question=schemas.QUESTION_TYPES.get(question_type, ""),
-            short_answer="Limit reached",
+            short_answer="Daily limit reached",
             recommended_time_window="—",
             caution="You have used all free reads today.",
-            reason="Upgrade to Lantern Sage Plus for more daily reads.",
+            reason="Check back tomorrow for a fresh daily rhythm.",
         )
 
     user = await session.get(models.User, user_id)

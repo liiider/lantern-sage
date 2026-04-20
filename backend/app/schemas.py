@@ -191,3 +191,26 @@ class HistoryResponse(BaseModel):
     entries: list[HistoryDayEntry]
     total_days: int
     tier: str
+
+
+class ImportantDateRequest(BaseModel):
+    user_id: uuid.UUID
+    target_date: date
+    event_type: str = Field(pattern="^(general|travel|meeting|move|signing|home)$")
+
+
+class ImportantDateResponse(BaseModel):
+    target_date: date
+    event_type: str
+    city: str
+    timezone: str
+    lunar_date: str
+    solar_term: str
+    day_ganzhi: str
+    day_quality: str
+    summary: str
+    best_window: str
+    caution_window: str
+    good_for: list[str]
+    avoid: list[str]
+    practical_tip: str

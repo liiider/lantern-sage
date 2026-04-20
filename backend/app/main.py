@@ -3,7 +3,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import ask, day, feedback, history, user
+from app.api import ask, day, feedback, history, important_date, user
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 
@@ -21,6 +21,7 @@ app.include_router(day.router)
 app.include_router(ask.router)
 app.include_router(feedback.router)
 app.include_router(history.router)
+app.include_router(important_date.router)
 app.include_router(user.router)
 
 
