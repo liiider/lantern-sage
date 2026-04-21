@@ -8,6 +8,7 @@ import '../services/lantern_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/page_scaffold.dart';
 import '../widgets/ritual_card.dart';
+import 'payment_bridge_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({
@@ -41,48 +42,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final profile = snapshot.data;
 
         return LanternPage(
+          icon: Icons.person_outline,
           title: 'Profile',
-          subtitle: 'Guest / MVP access',
+          subtitle: 'Guest / Free tier',
           children: [
             if (snapshot.hasError)
               const _SettingCard(
                 title: 'Connection',
                 value: 'Profile will sync when the service is available.',
               ),
-            _SettingCard(
-              title: 'Location',
-              value: profile == null
-                  ? 'Shanghai / Asia Shanghai'
-                  : '${profile.city} / ${profile.timezone}',
-              actionLabel: 'Change',
-              onTap: profile == null ? null : () => _openLocationSheet(profile),
+            _ProfileIdentity(profile: profile),
+            const RitualSeparator(),
+            const SectionLabel('Settings'),
+            _SettingsGroup(
+              profile: profile,
+              onLocationTap:
+                  profile == null ? null : () => _openLocationSheet(profile),
             ),
-            _SettingCard(
-              title: 'Evening reminder',
-              value: profile?.reminderTime ?? '20:00',
+            const SectionLabel('Subscription'),
+            _UpgradeCard(
+              onTap: () => _openPaidBridge('Lantern Sage Plus'),
             ),
-            const _SettingCard(
-              title: 'Daily guidance',
-              value: 'Today, Ask, History, and feedback are open for MVP testing.',
-            ),
+            const SectionLabel('One-time packs'),
             _SettingCard(
-              title: 'Important date guidance',
-              value: 'Choose one date and event for focused timing guidance.',
+              title: 'Important Date Pack',
+              value: 'Focused read for a specific date or event.',
               actionLabel: 'Open',
               onTap: _openImportantDateSheet,
+            ),
+            ClickCard(
+              title: 'Purchase Important Date Pack',
+              subtitle: 'Payment flow bridge placeholder',
+              onTap: () => _openPaidBridge('Important Date Pack'),
             ),
             if (_isLoadingImportantDate)
               const RitualCard(child: LinearProgressIndicator()),
             if (_importantDateOffline)
               const _SettingCard(
                 title: 'Connection',
-                value: 'Showing sample date guidance until the service responds.',
+                value:
+                    'Showing sample date guidance until the service responds.',
               ),
             if (_importantDateGuidance != null)
               _ImportantDateCard(guidance: _importantDateGuidance!),
+            const RitualSeparator(),
+            const SectionLabel('Account'),
+            const _SettingCard(
+                title: 'Sign in or create account', value: 'Coming later'),
+            const _SettingCard(
+                title: 'Privacy policy', value: 'MVP placeholder'),
+            const _SettingCard(
+                title: 'Terms of service', value: 'MVP placeholder'),
+            const _AppInfo(),
           ],
         );
       },
+    );
+  }
+
+  void _openPaidBridge(String offerName) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PaymentBridgeScreen(offerName: offerName),
+      ),
     );
   }
 
@@ -147,6 +169,198 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
+class _ProfileIdentity extends StatelessWidget {
+  const _ProfileIdentity({required this.profile});
+
+  final UserProfile? profile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: LanternSageTheme.accent.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(
+              color: LanternSageTheme.accent.withValues(alpha: 0.2),
+            ),
+          ),
+          child: const SizedBox(
+            width: 64,
+            height: 64,
+            child: Icon(
+              Icons.person_outline,
+              color: LanternSageTheme.textFaint,
+              size: 28,
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Guest', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 2),
+              Text(
+                profile == null ? 'Free tier' : '${profile?.city} / Free tier',
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SettingsGroup extends StatelessWidget {
+  const _SettingsGroup({
+    required this.profile,
+    required this.onLocationTap,
+  });
+
+  final UserProfile? profile;
+  final VoidCallback? onLocationTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final city = profile?.city ?? 'Shanghai';
+    final timezone = profile?.timezone ?? 'Asia/Shanghai';
+    final reminder = profile?.reminderTime ?? '20:00';
+
+    return RitualCard(
+      child: Column(
+        children: [
+          _SettingRow(
+            label: 'Timezone',
+            value: timezone,
+            onTap: onLocationTap,
+          ),
+          const _SettingDivider(),
+          _SettingRow(
+            label: 'City',
+            value: city,
+            onTap: onLocationTap,
+          ),
+          const _SettingDivider(),
+          const _SettingRow(label: 'Language', value: 'English'),
+          const _SettingDivider(),
+          _SettingRow(
+            label: 'Evening reminder',
+            value: _formatReminder(reminder),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatReminder(String value) {
+    final parts = value.split(':');
+    if (parts.length != 2) {
+      return value;
+    }
+    final hour = int.tryParse(parts.first);
+    final minute = int.tryParse(parts.last);
+    if (hour == null || minute == null) {
+      return value;
+    }
+    final suffix = hour >= 12 ? 'PM' : 'AM';
+    final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+    return '$displayHour:${minute.toString().padLeft(2, '0')} $suffix';
+  }
+}
+
+class _SettingRow extends StatelessWidget {
+  const _SettingRow({
+    required this.label,
+    required this.value,
+    this.onTap,
+  });
+
+  final String label;
+  final String value;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
+            ),
+            const SizedBox(width: 12),
+            Flexible(
+              child: Text(
+                value,
+                textAlign: TextAlign.right,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+            if (onTap != null) ...[
+              const SizedBox(width: 8),
+              const ArrowGlyph(),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingDivider extends StatelessWidget {
+  const _SettingDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      height: 1,
+      color: LanternSageTheme.accent.withValues(alpha: 0.08),
+    );
+  }
+}
+
+class _UpgradeCard extends StatelessWidget {
+  const _UpgradeCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return RitualCard(
+      hero: true,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.layers_outlined,
+            color: LanternSageTheme.accent,
+            size: 32,
+          ),
+          const SizedBox(height: 12),
+          Text('Lantern Sage Plus',
+              style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 6),
+          Text(
+            'More daily reads, deeper timing guidance, 30-day history, and richer home adjustment suggestions.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 16),
+          FilledButton(onPressed: onTap, child: const Text('See plans')),
+        ],
+      ),
+    );
+  }
+}
+
 class _SettingCard extends StatelessWidget {
   const _SettingCard({
     required this.title,
@@ -163,24 +377,41 @@ class _SettingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RitualCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      onTap: onTap,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(title, style: Theme.of(context).textTheme.titleMedium),
-              ),
-              if (actionLabel != null)
-                TextButton(
-                  onPressed: onTap,
-                  child: Text(actionLabel!),
-                ),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                Text(value, style: Theme.of(context).textTheme.bodyMedium),
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(value, style: Theme.of(context).textTheme.bodyMedium),
+          if (actionLabel != null) ...[
+            const SizedBox(width: 12),
+            Text(actionLabel!, style: Theme.of(context).textTheme.labelSmall),
+            const SizedBox(width: 8),
+            const ArrowGlyph(),
+          ],
         ],
+      ),
+    );
+  }
+}
+
+class _AppInfo extends StatelessWidget {
+  const _AppInfo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        'Lantern Sage v1.0\nCalm guidance, better timing.',
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.labelSmall,
       ),
     );
   }
@@ -212,29 +443,33 @@ class _LocationSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-      decoration: const BoxDecoration(
-        color: Color(0xFF241006),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Choose location', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 14),
-          for (final choice in choices)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(choice.city),
-              subtitle: Text(choice.timezone),
-              trailing: choice.city == profile.city && choice.timezone == profile.timezone
-                  ? const Icon(Icons.check)
-                  : null,
-              onTap: () => Navigator.of(context).pop(choice),
-            ),
-        ],
+    return SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+        decoration: const BoxDecoration(
+          color: Color(0xFF241006),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Choose location',
+                style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 14),
+            for (final choice in choices)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(choice.city),
+                subtitle: Text(choice.timezone),
+                trailing: choice.city == profile.city &&
+                        choice.timezone == profile.timezone
+                    ? const Icon(Icons.check)
+                    : null,
+                onTap: () => Navigator.of(context).pop(choice),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -260,7 +495,8 @@ class _ImportantDateSheet extends StatefulWidget {
 class _ImportantDateSheetState extends State<_ImportantDateSheet> {
   final _formKey = GlobalKey<FormState>();
   final _dateController = TextEditingController(
-    text: DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 7))),
+    text: DateFormat('yyyy-MM-dd')
+        .format(DateTime.now().add(const Duration(days: 7))),
   );
 
   String _eventType = 'meeting';
@@ -286,49 +522,52 @@ class _ImportantDateSheetState extends State<_ImportantDateSheet> {
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-        decoration: const BoxDecoration(
-          color: Color(0xFF241006),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-        ),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Important date', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _dateController,
-                decoration: const InputDecoration(
-                  labelText: 'Date',
-                  hintText: 'YYYY-MM-DD',
+      child: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+          decoration: const BoxDecoration(
+            color: Color(0xFF241006),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Important date',
+                    style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _dateController,
+                  decoration: const InputDecoration(
+                    labelText: 'Date',
+                    hintText: 'YYYY-MM-DD',
+                  ),
+                  keyboardType: TextInputType.datetime,
+                  validator: _validateDate,
                 ),
-                keyboardType: TextInputType.datetime,
-                validator: _validateDate,
-              ),
-              const SizedBox(height: 14),
-              DropdownButtonFormField<String>(
-                initialValue: _eventType,
-                decoration: const InputDecoration(labelText: 'Event'),
-                items: _eventTypes,
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => _eventType = value);
-                  }
-                },
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: _submit,
-                  child: const Text('Get guidance'),
+                const SizedBox(height: 14),
+                DropdownButtonFormField<String>(
+                  initialValue: _eventType,
+                  decoration: const InputDecoration(labelText: 'Event'),
+                  items: _eventTypes,
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _eventType = value);
+                    }
+                  },
                 ),
-              ),
-            ],
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: _submit,
+                    child: const Text('Get guidance'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -340,6 +579,12 @@ class _ImportantDateSheetState extends State<_ImportantDateSheet> {
     final parsed = DateTime.tryParse(raw);
     if (parsed == null || DateFormat('yyyy-MM-dd').format(parsed) != raw) {
       return 'Use YYYY-MM-DD.';
+    }
+    final today = DateTime.now();
+    final todayOnly = DateTime(today.year, today.month, today.day);
+    final parsedOnly = DateTime(parsed.year, parsed.month, parsed.day);
+    if (parsedOnly.isBefore(todayOnly)) {
+      return 'Choose today or a future date.';
     }
     return null;
   }
@@ -368,9 +613,11 @@ class _ImportantDateCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(guidance.targetDate, style: Theme.of(context).textTheme.labelSmall),
+          Text(guidance.targetDate,
+              style: Theme.of(context).textTheme.labelSmall),
           const SizedBox(height: 8),
-          Text(guidance.summary, style: Theme.of(context).textTheme.titleMedium),
+          Text(guidance.summary,
+              style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 14),
           _GuidanceRow(label: 'Best window', value: guidance.bestWindow),
           _GuidanceRow(label: 'Caution window', value: guidance.cautionWindow),

@@ -3,17 +3,21 @@ import 'package:flutter/material.dart';
 import '../data/demo_data.dart';
 import '../models/ask_question.dart';
 import '../services/lantern_repository.dart';
-import '../theme/app_theme.dart';
 import '../widgets/page_scaffold.dart';
 import '../widgets/ritual_card.dart';
+import 'payment_bridge_screen.dart';
 
 class AskScreen extends StatefulWidget {
   const AskScreen({
     required this.repository,
+    this.initialQuestionType,
+    this.selectionRequestId = 0,
     super.key,
   });
 
   final LanternRepository repository;
+  final int? initialQuestionType;
+  final int selectionRequestId;
 
   @override
   State<AskScreen> createState() => _AskScreenState();
@@ -26,11 +30,22 @@ class _AskScreenState extends State<AskScreen> {
   AskAnswer? _answer;
   bool _isAsking = false;
   bool _offline = false;
+  int? _handledSelectionRequestId;
 
   @override
   void initState() {
     super.initState();
     _questionsFuture = widget.repository.getAskQuestions();
+    _handleIncomingSelection();
+  }
+
+  @override
+  void didUpdateWidget(covariant AskScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectionRequestId != widget.selectionRequestId ||
+        oldWidget.initialQuestionType != widget.initialQuestionType) {
+      _handleIncomingSelection();
+    }
   }
 
   @override
@@ -42,52 +57,85 @@ class _AskScreenState extends State<AskScreen> {
         final offline = _offline || snapshot.hasError;
 
         return LanternPage(
+          icon: Icons.help_outline,
           title: 'Ask',
-          subtitle: 'Free reads today',
           children: [
+            const PageHeader(
+              headline: 'Choose a question.',
+              subtitle:
+                  'Select one fixed question for a focused read. This is a deliberate consultation, not a chat.',
+            ),
+            const UsageBar(label: 'Free reads today', value: '1 of 2 used'),
             if (offline)
-              const _AskStatus(text: 'Using sample questions until the service responds.'),
+              const _AskStatus(
+                  text: 'Using sample questions until the service responds.'),
             for (final question in questions)
-              RitualCard(
-                onTap: question.available ? () => _selectQuestion(question) : null,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(question.text, style: Theme.of(context).textTheme.titleMedium),
-                          const SizedBox(height: 8),
-                          Text(
-                            question.available ? question.hint : 'Currently unavailable',
-                            style: Theme.of(context).textTheme.labelSmall,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(
-                      _selectedQuestion?.type == question.type
-                          ? Icons.check_circle
-                          : Icons.circle_outlined,
-                      color: question.available
-                          ? LanternSageTheme.accent
-                          : LanternSageTheme.textFaint,
-                      size: 22,
-                    ),
-                  ],
+              ClickCard(
+                title: question.text,
+                subtitle: question.available
+                    ? question.hint
+                    : 'Currently unavailable',
+                selected: _selectedQuestion?.type == question.type,
+                onTap:
+                    question.available ? () => _selectQuestion(question) : null,
+                trailing: Text(
+                  _selectedQuestion?.type == question.type ? 'Selected' : 'Ask',
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
               ),
             if (_isAsking)
               const RitualCard(
                 child: LinearProgressIndicator(),
               ),
-            if (_answer != null)
-              _AskAnswerCard(answer: _answer!),
+            if (_answer != null) _AskAnswerCard(answer: _answer!),
+            ConvertPanel(
+              label: 'Need something more specific?',
+              title: 'Important Date Pack',
+              copy:
+                  'A focused read built around one date, one event, and one clearer window.',
+              actionLabel: 'Open date pack',
+              onTap: () => _openPaidBridge(context, 'Important Date Pack'),
+              secondaryActionLabel: 'See Plus',
+              onSecondaryTap: () =>
+                  _openPaidBridge(context, 'Lantern Sage Plus'),
+            ),
           ],
         );
       },
     );
+  }
+
+  void _openPaidBridge(BuildContext context, String offerName) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PaymentBridgeScreen(offerName: offerName),
+      ),
+    );
+  }
+
+  Future<void> _handleIncomingSelection() async {
+    final questionType = widget.initialQuestionType;
+    if (questionType == null ||
+        _handledSelectionRequestId == widget.selectionRequestId) {
+      return;
+    }
+
+    _handledSelectionRequestId = widget.selectionRequestId;
+    final questions = await _questionsFuture;
+    if (!mounted) {
+      return;
+    }
+
+    AskQuestion? matching;
+    for (final question in questions) {
+      if (question.available && question.type == questionType) {
+        matching = question;
+        break;
+      }
+    }
+    if (matching != null) {
+      await _selectQuestion(matching);
+    }
   }
 
   Future<void> _selectQuestion(AskQuestion question) async {
@@ -145,9 +193,10 @@ class _AskAnswerCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Today\'s read', style: Theme.of(context).textTheme.labelSmall),
+          const SectionLabel('Today\'s read'),
           const SizedBox(height: 12),
-          Text(answer.shortAnswer, style: Theme.of(context).textTheme.titleLarge),
+          Text(answer.shortAnswer,
+              style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 14),
           _AnswerRow(label: 'Window', value: answer.recommendedTime),
           _AnswerRow(label: 'Caution', value: answer.caution),
@@ -174,7 +223,7 @@ class _AnswerRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: Theme.of(context).textTheme.labelSmall),
+          SectionLabel(label),
           const SizedBox(height: 4),
           Text(value, style: Theme.of(context).textTheme.bodyMedium),
         ],

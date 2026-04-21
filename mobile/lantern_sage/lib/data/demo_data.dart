@@ -54,7 +54,8 @@ const demoAnswer = AskAnswer(
   shortAnswer: 'Proceed gently.',
   recommendedTime: 'Late morning',
   caution: 'Keep the plan simple and leave room to pause.',
-  reason: 'The day favors small movement and clear surroundings over dense decisions.',
+  reason:
+      'The day favors small movement and clear surroundings over dense decisions.',
 );
 
 const demoImportantDate = ImportantDateGuidance(
@@ -71,5 +72,6 @@ const demoImportantDate = ImportantDateGuidance(
   cautionWindow: '7:00 PM - 9:00 PM',
   goodFor: ['Light planning', 'Casual meetings'],
   avoid: ['Rushing', 'Heavy changes'],
-  practicalTip: 'Keep the first conversation practical and save sensitive topics for later.',
+  practicalTip:
+      'Keep the first conversation practical and save sensitive topics for later.',
 );

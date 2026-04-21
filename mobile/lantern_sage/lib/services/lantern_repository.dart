@@ -26,7 +26,10 @@ class LanternRepository {
 
   UserProfile? _profile;
 
-  Future<UserProfile> getOrRegisterGuest() async {
+  Future<UserProfile> getOrRegisterGuest({
+    String? city,
+    String? timezone,
+  }) async {
     final cached = _profile;
     if (cached != null) {
       return cached;
@@ -35,12 +38,16 @@ class LanternRepository {
     final deviceId = await _identityStore.getOrCreateDeviceId();
     final json = await _apiClient.postJson('/user/register', {
       'device_id': deviceId,
-      'city': config.defaultCity,
-      'timezone': config.defaultTimezone,
+      'city': city ?? config.defaultCity,
+      'timezone': timezone ?? config.defaultTimezone,
     });
     final profile = UserProfile.fromJson(json);
     _profile = profile;
     return profile;
+  }
+
+  Future<bool> hasExistingGuestIdentity() {
+    return _identityStore.hasDeviceId();
   }
 
   Future<UserProfile> updateSettings({
@@ -76,7 +83,8 @@ class LanternRepository {
       'current_date': currentDate,
     });
 
-    return TodayRead.fromJson(json, DateFormat('MMMM d, yyyy - EEEE').format(now));
+    return TodayRead.fromJson(
+        json, DateFormat('MMMM d, yyyy - EEEE').format(now));
   }
 
   Future<List<AskQuestion>> getAskQuestions() async {
@@ -86,18 +94,15 @@ class LanternRepository {
       return askQuestions;
     }
 
-    return questions
-        .whereType<Map<String, dynamic>>()
-        .map((item) {
-          final parsed = AskQuestion.fromJson(item);
-          return AskQuestion(
-            type: parsed.type,
-            text: parsed.text,
-            hint: _hintForQuestionType(parsed.type),
-            available: parsed.available,
-          );
-        })
-        .toList();
+    return questions.whereType<Map<String, dynamic>>().map((item) {
+      final parsed = AskQuestion.fromJson(item);
+      return AskQuestion(
+        type: parsed.type,
+        text: parsed.text,
+        hint: _hintForQuestionType(parsed.type),
+        available: parsed.available,
+      );
+    }).toList();
   }
 
   Future<AskAnswer> askQuestion(int questionType) async {
@@ -122,7 +127,10 @@ class LanternRepository {
       return const [];
     }
 
-    return entries.whereType<Map<String, dynamic>>().map(HistoryEntry.fromJson).toList();
+    return entries
+        .whereType<Map<String, dynamic>>()
+        .map(HistoryEntry.fromJson)
+        .toList();
   }
 
   Future<FeedbackState> getFeedbackStatus() async {

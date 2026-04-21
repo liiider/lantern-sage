@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import uuid
 from datetime import date, datetime
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 QUESTION_TYPES = {
     0: "Is this a good time to go out?",
@@ -14,9 +15,19 @@ QUESTION_TYPES = {
 
 
 class UserCreate(BaseModel):
-    device_id: str
-    city: str = "Shanghai"
-    timezone: str = "Asia/Shanghai"
+    device_id: str = Field(min_length=1, max_length=128)
+    city: str = Field(default="Shanghai", min_length=1, max_length=64)
+    timezone: str = Field(default="Asia/Shanghai", min_length=1, max_length=64)
+
+    @field_validator("city")
+    @classmethod
+    def validate_city(cls, value: str) -> str:
+        return _clean_required_text(value, field_name="city", max_length=64)
+
+    @field_validator("timezone")
+    @classmethod
+    def validate_timezone(cls, value: str) -> str:
+        return _validate_timezone(value)
 
 
 class UserOut(BaseModel):
@@ -32,10 +43,24 @@ class UserOut(BaseModel):
 
 
 class UserSettingsUpdate(BaseModel):
-    city: str | None = None
-    timezone: str | None = None
+    city: str | None = Field(default=None, max_length=64)
+    timezone: str | None = Field(default=None, max_length=64)
     language: str | None = None
-    reminder_time: str | None = None
+    reminder_time: str | None = Field(default=None, pattern=r"^([01]\d|2[0-3]):[0-5]\d$")
+
+    @field_validator("city")
+    @classmethod
+    def validate_city(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        return _clean_required_text(value, field_name="city", max_length=64)
+
+    @field_validator("timezone")
+    @classmethod
+    def validate_timezone(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        return _validate_timezone(value)
 
 
 class HourBlock(BaseModel):
@@ -198,6 +223,13 @@ class ImportantDateRequest(BaseModel):
     target_date: date
     event_type: str = Field(pattern="^(general|travel|meeting|move|signing|home)$")
 
+    @field_validator("target_date")
+    @classmethod
+    def validate_target_date(cls, value: date) -> date:
+        if value < date.today():
+            raise ValueError("target_date must be today or later")
+        return value
+
 
 class ImportantDateResponse(BaseModel):
     target_date: date
@@ -214,3 +246,21 @@ class ImportantDateResponse(BaseModel):
     good_for: list[str]
     avoid: list[str]
     practical_tip: str
+
+
+def _clean_required_text(value: str, *, field_name: str, max_length: int) -> str:
+    cleaned = value.strip()
+    if not cleaned:
+        raise ValueError(f"{field_name} must not be blank")
+    if len(cleaned) > max_length:
+        raise ValueError(f"{field_name} must be {max_length} characters or fewer")
+    return cleaned
+
+
+def _validate_timezone(value: str) -> str:
+    cleaned = _clean_required_text(value, field_name="timezone", max_length=64)
+    try:
+        ZoneInfo(cleaned)
+    except ZoneInfoNotFoundError as exc:
+        raise ValueError("timezone must be a valid IANA timezone") from exc
+    return cleaned

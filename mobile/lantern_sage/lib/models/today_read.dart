@@ -78,5 +78,7 @@ List<String> _stringList(Object? value) {
 }
 
 String _joinLabelParts(List<String?> parts) {
-  return parts.where((part) => part != null && part.trim().isNotEmpty).join('  ');
+  return parts
+      .where((part) => part != null && part.trim().isNotEmpty)
+      .join('  ');
 }
