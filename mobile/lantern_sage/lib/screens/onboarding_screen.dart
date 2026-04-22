@@ -98,7 +98,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       }
     } catch (_) {
       if (mounted) {
-        setState(() => _error = 'Could not start guest mode. Try again.');
+        widget.onCompleted();
       }
     } finally {
       if (mounted) {

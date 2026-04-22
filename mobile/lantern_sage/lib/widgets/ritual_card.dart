@@ -9,6 +9,7 @@ class RitualCard extends StatelessWidget {
     this.onTap,
     this.selected = false,
     this.hero = false,
+    this.clickable = false,
     super.key,
   });
 
@@ -17,18 +18,22 @@ class RitualCard extends StatelessWidget {
   final VoidCallback? onTap;
   final bool selected;
   final bool hero;
+  final bool clickable;
 
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(hero ? 14 : 10);
     final borderColor = selected
         ? LanternSageTheme.accent.withValues(alpha: 0.5)
-        : LanternSageTheme.accent.withValues(alpha: hero ? 0.25 : 0.12);
-    final fill = hero
-        ? LanternSageTheme.heroSurface
-        : selected
-            ? LanternSageTheme.accent.withValues(alpha: 0.08)
-            : LanternSageTheme.surfaceMuted;
+        : LanternSageTheme.accent
+            .withValues(alpha: clickable ? 0.2 : (hero ? 0.25 : 0.12));
+    final fill = clickable && !selected
+        ? Colors.transparent
+        : hero
+            ? LanternSageTheme.heroSurface
+            : selected
+                ? LanternSageTheme.accent.withValues(alpha: 0.08)
+                : LanternSageTheme.surfaceMuted;
 
     final decorated = DecoratedBox(
       decoration: BoxDecoration(
@@ -48,19 +53,24 @@ class RitualCard extends StatelessWidget {
                   offset: const Offset(0, 28),
                 ),
               ]
-            : [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.25),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+            : clickable && !selected
+                ? null
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.25),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
       ),
       child: Stack(
         children: [
           Positioned.fill(
             child: CustomPaint(
-              painter: _RitualSurfacePainter(hero: hero),
+              painter: _RitualSurfacePainter(
+                hero: hero,
+                clickable: clickable,
+              ),
             ),
           ),
           Padding(
@@ -75,12 +85,16 @@ class RitualCard extends StatelessWidget {
       return decorated;
     }
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: radius,
-        child: decorated,
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: decorated,
+        ),
       ),
     );
   }
@@ -107,6 +121,7 @@ class ClickCard extends StatelessWidget {
     return RitualCard(
       selected: selected,
       onTap: onTap,
+      clickable: true,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -231,9 +246,13 @@ class _Rule extends StatelessWidget {
 }
 
 class _RitualSurfacePainter extends CustomPainter {
-  const _RitualSurfacePainter({required this.hero});
+  const _RitualSurfacePainter({
+    required this.hero,
+    required this.clickable,
+  });
 
   final bool hero;
+  final bool clickable;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -242,40 +261,29 @@ class _RitualSurfacePainter extends CustomPainter {
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
 
+    if (clickable) {
+      final washPaint = Paint()
+        ..shader = LinearGradient(
+          colors: [
+            LanternSageTheme.accent.withValues(alpha: 0.08),
+            Colors.transparent,
+          ],
+        ).createShader(Offset.zero & size);
+      canvas.drawRect(Offset.zero & size, washPaint);
+    }
+
     if (hero) {
       final inset = Rect.fromLTWH(8, 8, size.width - 16, size.height - 16);
       canvas.drawRRect(
         RRect.fromRectAndRadius(inset, const Radius.circular(10)),
         linePaint,
       );
-
-      const corner = 24.0;
-      final cornerPaint = Paint()
-        ..color = LanternSageTheme.accent.withValues(alpha: 0.2)
-        ..strokeWidth = 1
-        ..style = PaintingStyle.stroke;
-      for (final origin in [
-        const Offset(12, 12),
-        Offset(size.width - 12 - corner, 12),
-        Offset(12, size.height - 12 - corner),
-        Offset(size.width - 12 - corner, size.height - 12 - corner),
-      ]) {
-        canvas.drawRect(
-            Rect.fromLTWH(origin.dx, origin.dy, corner, corner), cornerPaint);
-      }
-    }
-
-    final fiberPaint = Paint()
-      ..color = LanternSageTheme.accent.withValues(alpha: hero ? 0.025 : 0.015)
-      ..strokeWidth = 1;
-    for (double x = 18; x < size.width; x += 42) {
-      canvas.drawLine(Offset(x, 8), Offset(x, size.height - 8), fiberPaint);
     }
   }
 
   @override
   bool shouldRepaint(covariant _RitualSurfacePainter oldDelegate) {
-    return oldDelegate.hero != hero;
+    return oldDelegate.hero != hero || oldDelegate.clickable != clickable;
   }
 }
 

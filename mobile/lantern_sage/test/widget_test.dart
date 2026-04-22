@@ -42,6 +42,24 @@ void main() {
     expect(find.text('Today'), findsWidgets);
   });
 
+  testWidgets('first run onboarding can continue when guest register fails',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final repository = FakeRepository(
+      hasExistingIdentity: false,
+      registerError: true,
+    );
+
+    await tester.pumpWidget(LanternSageApp(repository: repository));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Continue as guest'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Continue as guest'), findsNothing);
+    expect(find.text('Today'), findsWidgets);
+  });
+
   testWidgets('existing users skip onboarding', (tester) async {
     SharedPreferences.setMockInitialValues(
         {'lantern_sage_onboarding_completed': true});
@@ -302,6 +320,7 @@ Widget _testApp(Widget child) {
 class FakeRepository extends LanternRepository {
   FakeRepository({
     this.hasExistingIdentity = true,
+    this.registerError = false,
     this.todayError = false,
     List<HistoryEntry>? history,
   })  : history = history ??
@@ -324,6 +343,7 @@ class FakeRepository extends LanternRepository {
         );
 
   final bool hasExistingIdentity;
+  final bool registerError;
   final bool todayError;
   final List<HistoryEntry> history;
 
@@ -347,6 +367,9 @@ class FakeRepository extends LanternRepository {
   @override
   Future<UserProfile> getOrRegisterGuest(
       {String? city, String? timezone}) async {
+    if (registerError) {
+      throw Exception('register offline');
+    }
     registeredCity = city ?? registeredCity;
     profile = profile.copyWith(
       city: city,

@@ -338,7 +338,7 @@ class _AskPreview extends StatelessWidget {
         for (final question in askQuestions.take(3)) ...[
           ClickCard(
             title: question.text,
-            subtitle: 'Tap Ask below to continue',
+            subtitle: 'Tap for guidance',
             onTap: onAskQuestion == null
                 ? null
                 : () => onAskQuestion!(question.type),
@@ -351,7 +351,14 @@ class _AskPreview extends StatelessWidget {
               ),
               child: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                child: Text('Ask'),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Ask'),
+                    SizedBox(width: 6),
+                    Icon(Icons.arrow_forward, size: 14),
+                  ],
+                ),
               ),
             ),
           ),

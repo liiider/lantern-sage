@@ -21,44 +21,38 @@ class LanternPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Stack(
-      children: [
-        const Positioned.fill(child: _CrackOverlay()),
-        CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 10),
-              sliver: SliverToBoxAdapter(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 452),
-                    child: _Masthead(
-                      icon: icon,
-                      title: title,
-                      subtitle: subtitle,
-                      theme: theme,
-                    ),
-                  ),
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 10),
+          sliver: SliverToBoxAdapter(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 452),
+                child: _Masthead(
+                  icon: icon,
+                  title: title,
+                  subtitle: subtitle,
+                  theme: theme,
                 ),
               ),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 32),
-              sliver: SliverList.separated(
-                itemBuilder: (context, index) {
-                  return Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 452),
-                      child: children[index],
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 24),
-                itemCount: children.length,
-              ),
-            ),
-          ],
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 104),
+          sliver: SliverList.separated(
+            itemBuilder: (context, index) {
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 452),
+                  child: children[index],
+                ),
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 24),
+            itemCount: children.length,
+          ),
         ),
       ],
     );
@@ -225,63 +219,4 @@ class ConvertPanel extends StatelessWidget {
       ),
     );
   }
-}
-
-class _CrackOverlay extends StatelessWidget {
-  const _CrackOverlay();
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: CustomPaint(
-        painter: _CrackPainter(),
-      ),
-    );
-  }
-}
-
-class _CrackPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = LanternSageTheme.accent.withValues(alpha: 0.08)
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    Path crack(double startX, List<Offset> points) {
-      final path = Path()..moveTo(startX * size.width, 0);
-      for (final point in points) {
-        path.quadraticBezierTo(
-          (startX + point.dx * 0.02) * size.width,
-          point.dy * size.height,
-          startX * size.width,
-          (point.dy + 0.08) * size.height,
-        );
-      }
-      return path;
-    }
-
-    canvas.drawPath(
-      crack(0.13, const [
-        Offset(0.4, 0.14),
-        Offset(-0.5, 0.35),
-        Offset(0.7, 0.58),
-        Offset(-0.2, 0.78)
-      ]),
-      paint,
-    );
-    canvas.drawPath(
-      crack(0.88, const [
-        Offset(-0.3, 0.18),
-        Offset(0.4, 0.42),
-        Offset(-0.6, 0.66),
-        Offset(0.2, 0.86)
-      ]),
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

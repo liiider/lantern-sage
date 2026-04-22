@@ -72,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ClickCard(
               title: 'Purchase Important Date Pack',
-              subtitle: 'Payment flow bridge placeholder',
+              subtitle: 'Unlock one focused read for a specific date or event',
               onTap: () => _openPaidBridge('Important Date Pack'),
             ),
             if (_isLoadingImportantDate)

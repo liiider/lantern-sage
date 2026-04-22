@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/demo_data.dart';
 import '../models/ask_question.dart';
 import '../services/lantern_repository.dart';
+import '../theme/app_theme.dart';
 import '../widgets/page_scaffold.dart';
 import '../widgets/ritual_card.dart';
 import 'payment_bridge_screen.dart';
@@ -78,9 +79,8 @@ class _AskScreenState extends State<AskScreen> {
                 selected: _selectedQuestion?.type == question.type,
                 onTap:
                     question.available ? () => _selectQuestion(question) : null,
-                trailing: Text(
-                  _selectedQuestion?.type == question.type ? 'Selected' : 'Ask',
-                  style: Theme.of(context).textTheme.labelSmall,
+                trailing: _QuestionStateMark(
+                  selected: _selectedQuestion?.type == question.type,
                 ),
               ),
             if (_isAsking)
@@ -165,6 +165,43 @@ class _AskScreenState extends State<AskScreen> {
         setState(() => _isAsking = false);
       }
     }
+  }
+}
+
+class _QuestionStateMark extends StatelessWidget {
+  const _QuestionStateMark({required this.selected});
+
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: selected ? 'Selected' : 'Ask',
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: LanternSageTheme.accent.withValues(
+              alpha: selected ? 0.55 : 0.22,
+            ),
+          ),
+          color: selected
+              ? LanternSageTheme.accent.withValues(alpha: 0.1)
+              : Colors.transparent,
+        ),
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: Icon(
+            selected ? Icons.check : Icons.arrow_forward,
+            size: selected ? 15 : 14,
+            color: selected
+                ? LanternSageTheme.textStrong
+                : LanternSageTheme.textSoft,
+          ),
+        ),
+      ),
+    );
   }
 }
 

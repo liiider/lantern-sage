@@ -130,31 +130,30 @@ class _LanternSageShellState extends State<LanternSageShell> {
           children: screens,
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        height: 64,
+      bottomNavigationBar: _RitualBottomNavigation(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
           setState(() => _selectedIndex = index);
         },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.wb_twilight_outlined),
-            selectedIcon: Icon(Icons.wb_twilight),
+        items: const [
+          _RitualNavigationItem(
+            icon: Icons.wb_twilight_outlined,
+            selectedIcon: Icons.wb_twilight,
             label: 'Today',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.question_answer_outlined),
-            selectedIcon: Icon(Icons.question_answer),
+          _RitualNavigationItem(
+            icon: Icons.question_answer_outlined,
+            selectedIcon: Icons.question_answer,
             label: 'Ask',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(Icons.history),
+          _RitualNavigationItem(
+            icon: Icons.history_outlined,
+            selectedIcon: Icons.history,
             label: 'History',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
+          _RitualNavigationItem(
+            icon: Icons.person_outline,
+            selectedIcon: Icons.person,
             label: 'Profile',
           ),
         ],
@@ -168,5 +167,138 @@ class _LanternSageShellState extends State<LanternSageShell> {
       _pendingAskQuestionType = questionType;
       _askSelectionRequestId += 1;
     });
+  }
+}
+
+class _RitualNavigationItem {
+  const _RitualNavigationItem({
+    required this.icon,
+    required this.selectedIcon,
+    required this.label,
+  });
+
+  final IconData icon;
+  final IconData selectedIcon;
+  final String label;
+}
+
+class _RitualBottomNavigation extends StatelessWidget {
+  const _RitualBottomNavigation({
+    required this.items,
+    required this.selectedIndex,
+    required this.onDestinationSelected,
+  });
+
+  final List<_RitualNavigationItem> items;
+  final int selectedIndex;
+  final ValueChanged<int> onDestinationSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF120700), Color(0xFF0A0300)],
+        ),
+        border: Border(
+          top: BorderSide(
+            color: LanternSageTheme.accent.withValues(alpha: 0.12),
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.5),
+            blurRadius: 24,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: SizedBox(
+          height: 64,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var index = 0; index < items.length; index++)
+                Expanded(
+                  child: _RitualNavigationTile(
+                    item: items[index],
+                    selected: selectedIndex == index,
+                    onTap: () => onDestinationSelected(index),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RitualNavigationTile extends StatelessWidget {
+  const _RitualNavigationTile({
+    required this.item,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final _RitualNavigationItem item;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final labelStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: selected
+              ? LanternSageTheme.textStrong
+              : LanternSageTheme.textFaint,
+          fontSize: 10,
+          letterSpacing: 0.8,
+        );
+
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: item.label,
+      child: InkWell(
+        onTap: onTap,
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOut,
+              width: selected ? 42 : 0,
+              height: 2,
+              decoration: const BoxDecoration(
+                color: LanternSageTheme.accent,
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(2)),
+              ),
+            ),
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    selected ? item.selectedIcon : item.icon,
+                    color: selected
+                        ? LanternSageTheme.textStrong
+                        : LanternSageTheme.textFaint,
+                    size: 22,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(item.label, style: labelStyle),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
