@@ -36,12 +36,44 @@ class LanternRepository {
     }
 
     final deviceId = await _identityStore.getOrCreateDeviceId();
+    final preferredLocation = await _identityStore.getPreferredLocation(
+      defaultCity: config.defaultCity,
+      defaultTimezone: config.defaultTimezone,
+    );
+    final selectedCity = city ?? preferredLocation.city;
+    final selectedTimezone = timezone ?? preferredLocation.timezone;
     final json = await _apiClient.postJson('/user/register', {
       'device_id': deviceId,
-      'city': city ?? config.defaultCity,
-      'timezone': timezone ?? config.defaultTimezone,
+      'city': selectedCity,
+      'timezone': selectedTimezone,
     });
     final profile = UserProfile.fromJson(json);
+    await _identityStore.savePreferredLocation(
+      city: profile.city,
+      timezone: profile.timezone,
+    );
+    _profile = profile;
+    return profile;
+  }
+
+  Future<UserProfile> useLocalGuestFallback({
+    required String city,
+    required String timezone,
+  }) async {
+    final deviceId = await _identityStore.getOrCreateDeviceId();
+    await _identityStore.savePreferredLocation(
+      city: city,
+      timezone: timezone,
+    );
+    final profile = UserProfile(
+      id: 'local-$deviceId',
+      deviceId: deviceId,
+      city: city,
+      timezone: timezone,
+      language: 'en',
+      tier: 'free',
+      reminderTime: '20:00',
+    );
     _profile = profile;
     return profile;
   }
@@ -70,6 +102,10 @@ class LanternRepository {
       query: {'user_id': profile.id},
     );
     final updated = UserProfile.fromJson(json);
+    await _identityStore.savePreferredLocation(
+      city: updated.city,
+      timezone: updated.timezone,
+    );
     _profile = updated;
     return updated;
   }

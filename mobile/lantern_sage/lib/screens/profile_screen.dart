@@ -90,9 +90,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const _SettingCard(
                 title: 'Sign in or create account', value: 'Coming later'),
             const _SettingCard(
-                title: 'Privacy policy', value: 'MVP placeholder'),
+                title: 'Privacy policy',
+                value: 'Available before public release'),
             const _SettingCard(
-                title: 'Terms of service', value: 'MVP placeholder'),
+                title: 'Terms of service',
+                value: 'Available before public release'),
             const _AppInfo(),
           ],
         );

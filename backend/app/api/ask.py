@@ -1,3 +1,6 @@
+from datetime import date
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -33,13 +36,8 @@ async def ask(
 
 @router.get("/usage", response_model=schemas.AskUsageResponse)
 async def usage(
-    user_id: str = Query(...),
-    current_date: str = Query(...),
+    user_id: UUID = Query(...),
+    current_date: date = Query(...),
     session: AsyncSession = Depends(get_db),
 ):
-    from datetime import date as date_type
-    from uuid import UUID
-
-    uid = UUID(user_id)
-    d = date_type.fromisoformat(current_date)
-    return await ask_service.get_usage(session, uid, d)
+    return await ask_service.get_usage(session, user_id, current_date)

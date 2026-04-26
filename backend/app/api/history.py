@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,12 +12,9 @@ router = APIRouter(prefix="/history", tags=["history"])
 
 @router.get("", response_model=schemas.HistoryResponse)
 async def get_history(
-    user_id: str = Query(...),
+    user_id: UUID = Query(...),
     session: AsyncSession = Depends(get_db),
 ):
-    from uuid import UUID
-
-    uid = UUID(user_id)
-    user = await session.get(models.User, uid)
+    user = await session.get(models.User, user_id)
     tier = user.tier if user else "free"
-    return await history_service.get_history(session, uid, tier)
+    return await history_service.get_history(session, user_id, tier)

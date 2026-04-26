@@ -4,8 +4,10 @@ from datetime import date, timedelta
 from uuid import uuid4
 
 import pytest
+from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
+from app.main import app
 from app import schemas
 
 
@@ -57,3 +59,39 @@ def test_important_date_accepts_today():
     )
 
     assert request.target_date == today
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/ask/usage?user_id=not-a-uuid&current_date=2026-04-26",
+        "/feedback/status?user_id=not-a-uuid&current_date=2026-04-26",
+        "/history?user_id=not-a-uuid",
+        "/user/profile?user_id=not-a-uuid",
+        "/user/settings?user_id=not-a-uuid",
+    ],
+)
+def test_invalid_user_id_queries_return_validation_errors(path):
+    client = TestClient(app)
+
+    if path.startswith("/user/settings"):
+        response = client.patch(path, json={"city": "New York"})
+    else:
+        response = client.get(path)
+
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/ask/usage?user_id=00000000-0000-0000-0000-000000000000&current_date=bad-date",
+        "/feedback/status?user_id=00000000-0000-0000-0000-000000000000&current_date=bad-date",
+    ],
+)
+def test_invalid_date_queries_return_validation_errors(path):
+    client = TestClient(app)
+
+    response = client.get(path)
+
+    assert response.status_code == 422

@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class DeviceIdentityStore {
   static const _deviceIdKey = 'lantern_sage_device_id';
+  static const _preferredCityKey = 'lantern_sage_preferred_city';
+  static const _preferredTimezoneKey = 'lantern_sage_preferred_timezone';
 
   Future<bool> hasDeviceId() async {
     final prefs = await SharedPreferences.getInstance();
@@ -21,6 +23,29 @@ class DeviceIdentityStore {
     final generated = _newDeviceId();
     await prefs.setString(_deviceIdKey, generated);
     return generated;
+  }
+
+  Future<void> savePreferredLocation({
+    required String city,
+    required String timezone,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_preferredCityKey, city);
+    await prefs.setString(_preferredTimezoneKey, timezone);
+  }
+
+  Future<({String city, String timezone})> getPreferredLocation({
+    required String defaultCity,
+    required String defaultTimezone,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final city = prefs.getString(_preferredCityKey);
+    final timezone = prefs.getString(_preferredTimezoneKey);
+    return (
+      city: city != null && city.isNotEmpty ? city : defaultCity,
+      timezone:
+          timezone != null && timezone.isNotEmpty ? timezone : defaultTimezone,
+    );
   }
 
   String _newDeviceId() {

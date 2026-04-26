@@ -32,13 +32,13 @@ class PaymentBridgeScreen extends StatelessWidget {
                     const SealGlyph(size: 96),
                     const SizedBox(height: 20),
                     Text(
-                      'Payment handoff placeholder',
+                      'Review access',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'This empty bridge stands in for the future checkout provider.',
+                      'Checkout is not connected in this MVP preview. Continue to review the paid access state.',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
@@ -80,7 +80,7 @@ class PaidAccessScreen extends StatelessWidget {
         bottom: false,
         child: LanternPage(
           icon: Icons.workspace_premium_outlined,
-          title: 'Access active',
+          title: 'Access preview',
           subtitle: offerName,
           children: [
             RitualCard(
@@ -91,7 +91,7 @@ class PaidAccessScreen extends StatelessWidget {
                   const SealGlyph(size: 96),
                   const SizedBox(height: 20),
                   Text(
-                    '$offerName is active.',
+                    '$offerName preview',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
@@ -99,7 +99,7 @@ class PaidAccessScreen extends StatelessWidget {
                   Text(
                     offerName == 'Important Date Pack'
                         ? 'The focused date guidance flow is ready for use.'
-                        : 'Plus access is shown as active for the MVP paid-state screen.',
+                        : 'Plus access is shown for MVP paid-state review.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),

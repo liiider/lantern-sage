@@ -97,6 +97,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         widget.onCompleted();
       }
     } catch (_) {
+      await widget.repository.useLocalGuestFallback(
+        city: _selected.city,
+        timezone: _selected.timezone,
+      );
       if (mounted) {
         widget.onCompleted();
       }

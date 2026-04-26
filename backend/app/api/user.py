@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,13 +31,12 @@ async def register(
 
 @router.get("/profile", response_model=schemas.UserOut)
 async def get_profile(
-    user_id: str = "",
+    user_id: UUID | None = None,
     device_id: str = "",
     session: AsyncSession = Depends(get_db),
 ):
     if user_id:
-        from uuid import UUID
-        user = await session.get(models.User, UUID(user_id))
+        user = await session.get(models.User, user_id)
     elif device_id:
         stmt = select(models.User).where(models.User.device_id == device_id)
         result = await session.execute(stmt)
@@ -50,13 +51,11 @@ async def get_profile(
 
 @router.patch("/settings", response_model=schemas.UserOut)
 async def update_settings(
-    user_id: str,
+    user_id: UUID,
     req: schemas.UserSettingsUpdate,
     session: AsyncSession = Depends(get_db),
 ):
-    from uuid import UUID
-
-    user = await session.get(models.User, UUID(user_id))
+    user = await session.get(models.User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 

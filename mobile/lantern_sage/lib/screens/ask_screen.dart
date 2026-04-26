@@ -66,7 +66,7 @@ class _AskScreenState extends State<AskScreen> {
               subtitle:
                   'Select one fixed question for a focused read. This is a deliberate consultation, not a chat.',
             ),
-            const UsageBar(label: 'Free reads today', value: '1 of 2 used'),
+            const UsageBar(label: 'Free reads today', value: '2 included'),
             if (offline)
               const _AskStatus(
                   text: 'Using sample questions until the service responds.'),
@@ -121,7 +121,15 @@ class _AskScreenState extends State<AskScreen> {
     }
 
     _handledSelectionRequestId = widget.selectionRequestId;
-    final questions = await _questionsFuture;
+    List<AskQuestion> questions;
+    try {
+      questions = await _questionsFuture;
+    } catch (_) {
+      questions = askQuestions;
+      if (mounted) {
+        setState(() => _offline = true);
+      }
+    }
     if (!mounted) {
       return;
     }

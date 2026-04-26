@@ -53,9 +53,15 @@ void main() {
     await tester.pumpWidget(LanternSageApp(repository: repository));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.text('Shanghai / Asia/Shanghai'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('London / Europe/London').last);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Continue as guest'));
     await tester.pumpAndSettle();
 
+    expect(repository.profile.city, 'London');
+    expect(repository.profile.timezone, 'Europe/London');
     expect(find.text('Continue as guest'), findsNothing);
     expect(find.text('Today'), findsWidgets);
   });
@@ -138,6 +144,27 @@ void main() {
 
     expect(repository.lastQuestionType, 0);
     expect(find.text('Free reads today'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Proceed gently.'), 500);
+    await tester.pumpAndSettle();
+    expect(find.text('Proceed gently.'), findsOneWidget);
+  });
+
+  testWidgets('Today Ask preview still works when Ask questions are offline',
+      (tester) async {
+    final repository = FakeRepository(questionsError: true, askError: true);
+
+    await tester.pumpWidget(_testApp(LanternSageShell(repository: repository)));
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+        find.text('Is this a good time to go out?'), 500);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Is this a good time to go out?').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Free reads today'), findsOneWidget);
+    expect(find.text('Using sample questions until the service responds.'),
+        findsOneWidget);
     await tester.scrollUntilVisible(find.text('Proceed gently.'), 500);
     await tester.pumpAndSettle();
     expect(find.text('Proceed gently.'), findsOneWidget);
@@ -246,11 +273,9 @@ void main() {
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Access active'), findsOneWidget);
-    expect(find.text('Lantern Sage Plus is active.'), findsOneWidget);
-    expect(
-        find.text(
-            'Plus access is shown as active for the MVP paid-state screen.'),
+    expect(find.text('Access preview'), findsOneWidget);
+    expect(find.text('Lantern Sage Plus preview'), findsOneWidget);
+    expect(find.text('Plus access is shown for MVP paid-state review.'),
         findsOneWidget);
   });
 
@@ -270,8 +295,8 @@ void main() {
 
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
-    expect(find.text('Access active'), findsOneWidget);
-    expect(find.text('Important Date Pack is active.'), findsOneWidget);
+    expect(find.text('Access preview'), findsOneWidget);
+    expect(find.text('Important Date Pack preview'), findsOneWidget);
   });
 
   testWidgets('History Plus CTA opens paid bridge', (tester) async {
@@ -322,6 +347,8 @@ class FakeRepository extends LanternRepository {
     this.hasExistingIdentity = true,
     this.registerError = false,
     this.todayError = false,
+    this.questionsError = false,
+    this.askError = false,
     List<HistoryEntry>? history,
   })  : history = history ??
             const [
@@ -345,6 +372,8 @@ class FakeRepository extends LanternRepository {
   final bool hasExistingIdentity;
   final bool registerError;
   final bool todayError;
+  final bool questionsError;
+  final bool askError;
   final List<HistoryEntry> history;
 
   UserProfile profile = const UserProfile(
@@ -379,6 +408,18 @@ class FakeRepository extends LanternRepository {
   }
 
   @override
+  Future<UserProfile> useLocalGuestFallback({
+    required String city,
+    required String timezone,
+  }) async {
+    profile = profile.copyWith(
+      city: city,
+      timezone: timezone,
+    );
+    return profile;
+  }
+
+  @override
   Future<UserProfile> updateSettings({
     required String city,
     required String timezone,
@@ -401,11 +442,19 @@ class FakeRepository extends LanternRepository {
   }
 
   @override
-  Future<List<AskQuestion>> getAskQuestions() async => askQuestions;
+  Future<List<AskQuestion>> getAskQuestions() async {
+    if (questionsError) {
+      throw Exception('questions offline');
+    }
+    return askQuestions;
+  }
 
   @override
   Future<AskAnswer> askQuestion(int questionType) async {
     lastQuestionType = questionType;
+    if (askError) {
+      throw Exception('ask offline');
+    }
     return demoAnswer;
   }
 
