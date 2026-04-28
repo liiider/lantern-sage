@@ -10,3 +10,4 @@ __pycache__/
 .flutter-plugins-dependencies
 build/
 .codex/*.log
+server.*.log

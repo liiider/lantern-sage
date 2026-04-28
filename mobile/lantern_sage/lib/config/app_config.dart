@@ -25,4 +25,6 @@ class AppConfig {
   final String apiBaseUrl;
   final String defaultCity;
   final String defaultTimezone;
+
+  bool get usesSampleData => apiBaseUrl.trim().toLowerCase() == 'sample';
 }

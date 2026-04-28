@@ -220,7 +220,7 @@ class _RitualBottomNavigation extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.only(bottom: bottomInset),
         child: SizedBox(
-          height: 64,
+          height: 72,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -265,38 +265,46 @@ class _RitualNavigationTile extends StatelessWidget {
       button: true,
       selected: selected,
       label: item.label,
-      child: InkWell(
-        onTap: onTap,
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 220),
-              curve: Curves.easeOut,
-              width: selected ? 42 : 0,
-              height: 2,
-              decoration: const BoxDecoration(
-                color: LanternSageTheme.accent,
-                borderRadius: BorderRadius.vertical(bottom: Radius.circular(2)),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const RoundedRectangleBorder(),
+          child: Stack(
+            alignment: Alignment.topCenter,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOut,
+                width: selected ? 42 : 0,
+                height: 2,
+                decoration: const BoxDecoration(
+                  color: LanternSageTheme.accent,
+                  borderRadius:
+                      BorderRadius.vertical(bottom: Radius.circular(2)),
+                ),
               ),
-            ),
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    selected ? item.selectedIcon : item.icon,
-                    color: selected
-                        ? LanternSageTheme.textStrong
-                        : LanternSageTheme.textFaint,
-                    size: 22,
+              Center(
+                child: SizedBox(
+                  height: 64,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        selected ? item.selectedIcon : item.icon,
+                        color: selected
+                            ? LanternSageTheme.textStrong
+                            : LanternSageTheme.textFaint,
+                        size: 22,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(item.label, style: labelStyle),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(item.label, style: labelStyle),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

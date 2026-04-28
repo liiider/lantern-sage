@@ -122,6 +122,27 @@ void main() {
     expect(find.text('Marked as Accurate.'), findsOneWidget);
   });
 
+  testWidgets('sample preview renders Today without API error copy',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final repository = LanternRepository(
+      config: const AppConfig(
+        apiBaseUrl: 'sample',
+        defaultCity: 'Shanghai',
+        defaultTimezone: 'Asia/Shanghai',
+      ),
+    );
+
+    await tester.pumpWidget(_testApp(TodayScreen(repository: repository)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Move where the day opens.'), findsOneWidget);
+    expect(
+        find.text(
+            'Using saved sample guidance while the service is unavailable.'),
+        findsNothing);
+  });
+
   testWidgets('Today expands hours and Ask preview opens selected Ask flow',
       (tester) async {
     final repository = FakeRepository();
@@ -147,6 +168,16 @@ void main() {
     await tester.scrollUntilVisible(find.text('Proceed gently.'), 500);
     await tester.pumpAndSettle();
     expect(find.text('Proceed gently.'), findsOneWidget);
+  });
+
+  testWidgets('Today compass fallback avoids guarantee-coded labels',
+      (tester) async {
+    await tester
+        .pumpWidget(_testApp(TodayScreen(repository: FakeRepository())));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Wealth'), findsNothing);
+    expect(find.text('Blessing'), findsNothing);
   });
 
   testWidgets('Today Ask preview still works when Ask questions are offline',
@@ -239,9 +270,9 @@ void main() {
     await tester.pumpWidget(_testApp(ProfileScreen(repository: repository)));
     await tester.pumpAndSettle();
 
-    await tester.scrollUntilVisible(find.text('Open'), 500);
+    await tester.scrollUntilVisible(find.text('Use date guidance'), 500);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Open'));
+    await tester.tap(find.text('Use date guidance'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField), '2000-01-01');
     await tester.tap(find.text('Get guidance'));
@@ -257,7 +288,8 @@ void main() {
         findsOneWidget);
   });
 
-  testWidgets('paid offers bridge into an active access page', (tester) async {
+  testWidgets('paid offers bridge into a preview and returns to source',
+      (tester) async {
     await tester
         .pumpWidget(_testApp(ProfileScreen(repository: FakeRepository())));
     await tester.pumpAndSettle();
@@ -275,8 +307,16 @@ void main() {
 
     expect(find.text('Access preview'), findsOneWidget);
     expect(find.text('Lantern Sage Plus preview'), findsOneWidget);
-    expect(find.text('Plus access is shown for MVP paid-state review.'),
+    expect(
+        find.text(
+            'This preview shows where Plus access will unlock after checkout is connected.'),
         findsOneWidget);
+
+    await tester.tap(find.text('Back to Lantern Sage'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('See plans'), findsOneWidget);
+    expect(find.text('Lantern Sage Plus preview'), findsNothing);
   });
 
   testWidgets('Ask preserves both paid CTAs for date pack and Plus',
@@ -313,16 +353,18 @@ void main() {
     expect(find.text('Lantern Sage Plus'), findsOneWidget);
   });
 
-  testWidgets('Profile one-time pack purchase opens paid bridge',
+  testWidgets('Profile separates use and purchase preview entries',
       (tester) async {
     await tester
         .pumpWidget(_testApp(ProfileScreen(repository: FakeRepository())));
     await tester.pumpAndSettle();
 
     await tester.scrollUntilVisible(
-        find.text('Purchase Important Date Pack'), 500);
+        find.text('Preview date pack purchase'), 500);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Purchase Important Date Pack'));
+    expect(find.text('Preview date pack purchase'), findsOneWidget);
+
+    await tester.tap(find.text('Preview date pack purchase'));
     await tester.pumpAndSettle();
 
     expect(find.text('Payment bridge'), findsOneWidget);

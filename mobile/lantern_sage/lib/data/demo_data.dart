@@ -20,8 +20,8 @@ const demoToday = TodayRead(
   bestTime: '9:00 AM - 11:00 AM',
   avoidTime: '7:00 PM - 9:00 PM',
   compass: [
-    CompassItem(direction: 'N', label: 'Wealth', quality: 'open'),
-    CompassItem(direction: 'S', label: 'Blessing', quality: 'steady'),
+    CompassItem(direction: 'N', label: 'Open', quality: 'clear'),
+    CompassItem(direction: 'S', label: 'Steady', quality: 'steady'),
     CompassItem(direction: 'E', label: 'Movement', quality: 'light'),
     CompassItem(direction: 'W', label: 'Rest', quality: 'quiet'),
   ],

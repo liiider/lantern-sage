@@ -520,8 +520,8 @@ class _CompassPainter extends CustomPainter {
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
     final labels = items.isEmpty
         ? const [
-            CompassItem(direction: 'N', label: 'Wealth', quality: 'open'),
-            CompassItem(direction: 'S', label: 'Blessing', quality: 'steady'),
+            CompassItem(direction: 'N', label: 'Open', quality: 'clear'),
+            CompassItem(direction: 'S', label: 'Steady', quality: 'steady'),
             CompassItem(direction: 'E', label: 'Movement', quality: 'light'),
             CompassItem(direction: 'W', label: 'Rest', quality: 'quiet'),
           ]

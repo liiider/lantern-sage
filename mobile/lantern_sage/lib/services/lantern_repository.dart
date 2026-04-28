@@ -42,6 +42,13 @@ class LanternRepository {
     );
     final selectedCity = city ?? preferredLocation.city;
     final selectedTimezone = timezone ?? preferredLocation.timezone;
+    if (config.usesSampleData) {
+      return useLocalGuestFallback(
+        city: selectedCity,
+        timezone: selectedTimezone,
+      );
+    }
+
     final json = await _apiClient.postJson('/user/register', {
       'device_id': deviceId,
       'city': selectedCity,
@@ -88,6 +95,20 @@ class LanternRepository {
     String? reminderTime,
   }) async {
     final profile = await getOrRegisterGuest();
+    if (config.usesSampleData) {
+      final updated = profile.copyWith(
+        city: city,
+        timezone: timezone,
+        reminderTime: reminderTime,
+      );
+      await _identityStore.savePreferredLocation(
+        city: updated.city,
+        timezone: updated.timezone,
+      );
+      _profile = updated;
+      return updated;
+    }
+
     final body = <String, dynamic>{
       'city': city,
       'timezone': timezone,
@@ -111,6 +132,11 @@ class LanternRepository {
   }
 
   Future<TodayRead> getToday() async {
+    if (config.usesSampleData) {
+      await getOrRegisterGuest();
+      return demoToday;
+    }
+
     final profile = await getOrRegisterGuest();
     final now = DateTime.now();
     final currentDate = DateFormat('yyyy-MM-dd').format(now);
@@ -124,6 +150,10 @@ class LanternRepository {
   }
 
   Future<List<AskQuestion>> getAskQuestions() async {
+    if (config.usesSampleData) {
+      return askQuestions;
+    }
+
     final json = await _apiClient.getJson('/ask/questions');
     final questions = json['questions'];
     if (questions is! List) {
@@ -142,6 +172,11 @@ class LanternRepository {
   }
 
   Future<AskAnswer> askQuestion(int questionType) async {
+    if (config.usesSampleData) {
+      await getOrRegisterGuest();
+      return demoAnswer;
+    }
+
     final profile = await getOrRegisterGuest();
     final currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final json = await _apiClient.postJson('/ask', {
@@ -153,6 +188,11 @@ class LanternRepository {
   }
 
   Future<List<HistoryEntry>> getHistory() async {
+    if (config.usesSampleData) {
+      await getOrRegisterGuest();
+      return const [];
+    }
+
     final profile = await getOrRegisterGuest();
     final json = await _apiClient.getJson(
       '/history',
@@ -170,6 +210,13 @@ class LanternRepository {
   }
 
   Future<FeedbackState> getFeedbackStatus() async {
+    if (config.usesSampleData) {
+      return FeedbackState(
+        date: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+        submitted: false,
+      );
+    }
+
     final profile = await getOrRegisterGuest();
     final currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final json = await _apiClient.getJson(
@@ -183,6 +230,14 @@ class LanternRepository {
   }
 
   Future<FeedbackState> submitFeedback(String rating) async {
+    if (config.usesSampleData) {
+      return FeedbackState(
+        date: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+        submitted: true,
+        rating: rating,
+      );
+    }
+
     final profile = await getOrRegisterGuest();
     final currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final json = await _apiClient.postJson('/feedback', {
@@ -201,6 +256,11 @@ class LanternRepository {
     required DateTime targetDate,
     required String eventType,
   }) async {
+    if (config.usesSampleData) {
+      await getOrRegisterGuest();
+      return demoImportantDate;
+    }
+
     final profile = await getOrRegisterGuest();
     final json = await _apiClient.postJson('/important-date', {
       'user_id': profile.id,

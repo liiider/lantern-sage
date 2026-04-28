@@ -32,7 +32,7 @@ class PaymentBridgeScreen extends StatelessWidget {
                     const SealGlyph(size: 96),
                     const SizedBox(height: 20),
                     Text(
-                      'Review access',
+                      'Review preview',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
@@ -98,15 +98,15 @@ class PaidAccessScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     offerName == 'Important Date Pack'
-                        ? 'The focused date guidance flow is ready for use.'
-                        : 'Plus access is shown for MVP paid-state review.',
+                        ? 'This preview shows where the date pack will unlock after checkout is connected.'
+                        : 'This preview shows where Plus access will unlock after checkout is connected.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 20),
                   FilledButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Done'),
+                    child: const Text('Back to Lantern Sage'),
                   ),
                 ],
               ),

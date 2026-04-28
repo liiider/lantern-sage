@@ -65,14 +65,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SectionLabel('One-time packs'),
             _SettingCard(
-              title: 'Important Date Pack',
+              title: 'Use date guidance',
               value: 'Focused read for a specific date or event.',
               actionLabel: 'Open',
               onTap: _openImportantDateSheet,
             ),
             ClickCard(
-              title: 'Purchase Important Date Pack',
-              subtitle: 'Unlock one focused read for a specific date or event',
+              title: 'Preview date pack purchase',
+              subtitle:
+                  'Review where checkout will unlock one focused date read.',
               onTap: () => _openPaidBridge('Important Date Pack'),
             ),
             if (_isLoadingImportantDate)
@@ -88,13 +89,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const RitualSeparator(),
             const SectionLabel('Account'),
             const _SettingCard(
-                title: 'Sign in or create account', value: 'Coming later'),
+              title: 'Sign in or create account',
+              value: 'Required before account sync is released',
+            ),
             const _SettingCard(
-                title: 'Privacy policy',
-                value: 'Available before public release'),
+              title: 'Privacy policy',
+              value: 'Required before public release',
+            ),
             const _SettingCard(
-                title: 'Terms of service',
-                value: 'Available before public release'),
+              title: 'Terms of service',
+              value: 'Required before public release',
+            ),
             const _AppInfo(),
           ],
         );
